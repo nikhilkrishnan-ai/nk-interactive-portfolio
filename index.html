@@ -1,60 +1,168 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ml">
 <head>
     <meta charset="UTF-8">
-    <title>NK | GeoSense 3D Forensic World</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NK | GeoSense 3D Forensic Metaverse</title>
+    <!-- Three.js Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; overflow: hidden; background: #000; font-family: 'Courier New', monospace; }
-        #ui-layer { position: absolute; top: 20px; left: 20px; color: #0f0; pointer-events: none; }
-        .alert { color: #f00; font-weight: bold; animation: blink 1s infinite; }
-        @keyframes blink { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
+        body { margin: 0; overflow: hidden; background-color: #000; font-family: 'Share Tech Mono', monospace; }
+        
+        /* ഹെഡ്സെറ്റ് ലുക്ക് ഉള്ള യുഐ (UI) */
+        #overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            border: 20px solid rgba(0, 255, 102, 0.1);
+            box-sizing: border-box;
+            z-index: 10;
+        }
+
+        #dashboard {
+            position: absolute;
+            bottom: 30px; left: 30px;
+            color: #0f0;
+            background: rgba(0, 20, 0, 0.8);
+            padding: 20px;
+            border: 1px solid #0f0;
+            font-size: 14px;
+            z-index: 20;
+        }
+
+        .scanner-line {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 2px;
+            background: rgba(0, 255, 0, 0.3);
+            animation: scan 4s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+
+        #title-tag {
+            position: absolute;
+            top: 30px; width: 100%;
+            text-align: center;
+            color: #fff;
+            text-shadow: 0 0 10px #0f0;
+            font-size: 24px;
+            letter-spacing: 5px;
+            z-index: 20;
+        }
     </style>
 </head>
 <body>
-    <div id="ui-layer">
-        <h1>GEOSENSE 3D TERMINAL</h1>
-        <p>> STATUS: SCANNING ANOMALIES...</p>
-        <p class="alert">> CRITICAL: 250KM JUMP DETECTED</p>
-        <p>> NAVIGATE: USE MOUSE TO ROTATE WORLD</p>
+
+    <div id="overlay">
+        <div class="scanner-line"></div>
+    </div>
+
+    <div id="title-tag">GEOSENSE FORENSIC METAVERSE</div>
+
+    <div id="dashboard">
+        > USER: KRISHNAN NK (SR. DEVELOPER)<br>
+        > MISSION: ANALYZE 250KM JUMP<br>
+        > SYSTEM: 3D GNSS VISUALIZER<br>
+        > STATUS: <span style="color: #f00; animation: blink 1s infinite;">SPOOFING DETECTED</span>
     </div>
 
     <script>
-        // 3D Scene Setup
+        // --- 3D സീൻ സെറ്റപ്പ് ---
         const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x000000, 0.02);
+
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // Ground Mesh (Bruno Simon Style)
-        const grid = new THREE.GridHelper(100, 50, 0x00ff00, 0x222222);
+        // --- വെളിച്ചം (Lighting) ---
+        const ambientLight = new THREE.AmbientLight(0x404040, 2);
+        scene.add(ambientLight);
+        const pointLight = new THREE.PointLight(0x00ff66, 2, 100);
+        pointLight.position.set(0, 10, 10);
+        scene.add(pointLight);
+
+        // --- ഫ്ലോർ (Bruno Simon Style Grid) ---
+        const grid = new THREE.GridHelper(200, 100, 0x00ff66, 0x002200);
         scene.add(grid);
 
-        // Representing the 250KM Jump as a 3D Pulse
-        const geometry = new THREE.SphereGeometry(1, 32, 32);
-        const material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
-        const anomaly = new THREE.Mesh(geometry, material);
-        anomaly.position.set(5, 2, -10);
-        scene.add(anomaly);
+        // --- ഡാറ്റാ സ്ക്രീനുകൾ (Evidence Boards) ---
+        // നിന്റെ സ്ക്രീൻഷോട്ടുകൾ ഇവിടെ 3D ബോർഡുകളായി വരും
+        function createEvidenceBoard(url, x, z, title) {
+            const loader = new THREE.TextureLoader();
+            const geometry = new THREE.PlaneGeometry(8, 5);
+            const material = new THREE.MeshBasicMaterial({ 
+                color: 0xffffff,
+                side: THREE.DoubleSide,
+                map: loader.load(url) 
+            });
+            const plane = new THREE.Mesh(geometry, material);
+            plane.position.set(x, 4, z);
+            plane.rotation.y = Math.atan2(0 - x, 0 - z); // സെന്ററിലേക്ക് തിരിഞ്ഞു നിൽക്കാൻ
+            scene.add(plane);
 
-        camera.position.z = 15;
-        camera.position.y = 5;
+            // ബോർഡിന്റെ ഫ്രെയിം
+            const frameGeo = new THREE.BoxGeometry(8.2, 5.2, 0.1);
+            const frameMat = new THREE.MeshBasicMaterial({ color: 0x00ff66, wireframe: true });
+            const frame = new THREE.Mesh(frameGeo, frameMat);
+            frame.position.set(x, 4, z);
+            frame.rotation.y = plane.rotation.y;
+            scene.add(frame);
+        }
 
-        // Animation Loop
+        // നിന്റെ ഫയലുകളുടെ പേര് കൃത്യമായി ഇവിടെ നൽകുക
+        createEvidenceBoard('Screenshot_20260407_150128_Maps.jpg', -15, -15, "The Jump");
+        createEvidenceBoard('Screenshot_20260407_151951_GPS Test.jpg', 0, -20, "No Fix Analysis");
+        createEvidenceBoard('Screenshot_20260407_152237_GPS Test.jpg', 15, -15, "Solution: 3D Fix");
+
+        // --- നടുവിലെ അനോമലി (The Pulsing Core) ---
+        const coreGeo = new THREE.IcosahedronGeometry(2, 1);
+        const coreMat = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
+        const core = new THREE.Mesh(coreGeo, coreMat);
+        core.position.y = 3;
+        scene.add(core);
+
+        camera.position.set(0, 5, 20);
+
+        // --- ആനിമേഷൻ ലൂപ്പ് ---
         function animate() {
             requestAnimationFrame(animate);
-            anomaly.rotation.y += 0.01;
-            anomaly.scale.x = 1 + Math.sin(Date.now() * 0.005) * 0.2;
+
+            // കോർ കറങ്ങുകയും പൾസ് ചെയ്യുകയും ചെയ്യുന്നു
+            core.rotation.y += 0.01;
+            core.rotation.x += 0.005;
+            const scale = 1 + Math.sin(Date.now() * 0.003) * 0.3;
+            core.scale.set(scale, scale, scale);
+
             renderer.render(scene, camera);
         }
-        animate();
 
-        // Mouse Interaction
-        window.addEventListener('mousemove', (e) => {
-            camera.position.x = (e.clientX / window.innerWidth - 0.5) * 10;
-            camera.lookAt(anomaly.position);
+        // മൗസ് മൂവ് ചെയ്യുമ്പോൾ ക്യാമറ നീങ്ങുന്നു (Interactive Feeling)
+        let mouseX = 0, mouseY = 0;
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX - window.innerWidth / 2) * 0.05;
+            mouseY = (event.clientY - window.innerHeight / 2) * 0.05;
+            
+            camera.position.x += (mouseX - camera.position.x) * 0.05;
+            camera.position.y += (-mouseY + 5 - camera.position.y) * 0.05;
+            camera.lookAt(core.position);
         });
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
     </script>
 </body>
 </html>
