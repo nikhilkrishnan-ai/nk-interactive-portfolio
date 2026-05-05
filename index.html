@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NK | GeoSense 3D Forensic World</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Courier New', monospace; }
+        #ui-layer { position: absolute; top: 20px; left: 20px; color: #0f0; pointer-events: none; }
+        .alert { color: #f00; font-weight: bold; animation: blink 1s infinite; }
+        @keyframes blink { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
+    </style>
+</head>
+<body>
+    <div id="ui-layer">
+        <h1>GEOSENSE 3D TERMINAL</h1>
+        <p>> STATUS: SCANNING ANOMALIES...</p>
+        <p class="alert">> CRITICAL: 250KM JUMP DETECTED</p>
+        <p>> NAVIGATE: USE MOUSE TO ROTATE WORLD</p>
+    </div>
+
+    <script>
+        // 3D Scene Setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Ground Mesh (Bruno Simon Style)
+        const grid = new THREE.GridHelper(100, 50, 0x00ff00, 0x222222);
+        scene.add(grid);
+
+        // Representing the 250KM Jump as a 3D Pulse
+        const geometry = new THREE.SphereGeometry(1, 32, 32);
+        const material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
+        const anomaly = new THREE.Mesh(geometry, material);
+        anomaly.position.set(5, 2, -10);
+        scene.add(anomaly);
+
+        camera.position.z = 15;
+        camera.position.y = 5;
+
+        // Animation Loop
+        function animate() {
+            requestAnimationFrame(animate);
+            anomaly.rotation.y += 0.01;
+            anomaly.scale.x = 1 + Math.sin(Date.now() * 0.005) * 0.2;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Mouse Interaction
+        window.addEventListener('mousemove', (e) => {
+            camera.position.x = (e.clientX / window.innerWidth - 0.5) * 10;
+            camera.lookAt(anomaly.position);
+        });
+    </script>
+</body>
+</html>
