@@ -2,106 +2,133 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>NK | GeoSense 3D Pro Investigator</title>
+    <title>NK | GeoSense Forensic Lab 3.0</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         body { margin: 0; overflow: hidden; background-color: #000; font-family: 'Share Tech Mono', monospace; }
         #instructions {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            color: #0f0; text-align: center; background: rgba(0,20,0,0.8);
-            padding: 20px; border: 2px solid #0f0; z-index: 100;
+            color: #00ff66; text-align: center; background: rgba(0, 10, 0, 0.9);
+            padding: 30px; border: 1px solid #00ff66; z-index: 100;
+            box-shadow: 0 0 30px rgba(0, 255, 102, 0.2);
         }
-        #hud { position: absolute; bottom: 20px; left: 20px; color: #0f0; z-index: 10; font-size: 14px; }
+        #hud { position: absolute; top: 20px; right: 20px; color: #00ff66; text-align: right; pointer-events: none; }
+        .btn { background: #00ff66; color: #000; border: none; padding: 10px 20px; cursor: pointer; font-family: inherit; font-weight: bold; margin-top: 15px; }
     </style>
 </head>
 <body>
 
     <div id="instructions">
-        <h1>INVESTIGATION TERMINAL</h1>
-        <p>USE <b>W, A, S, D</b> TO WALK</p>
-        <p>USE <b>MOUSE</b> TO LOOK AROUND</p>
-        <button onclick="this.parentElement.style.display='none'" style="background:#0f0; border:none; padding:10px 20px; cursor:pointer;">START ANALYSIS</button>
+        <h1 style="letter-spacing: 5px;">GEOSENSE FORENSIC LAB</h1>
+        <p>ENTER THE 3D INVESTIGATION ENVIRONMENT</p>
+        <p style="font-size: 12px; opacity: 0.7;">[W,A,S,D] - MOVE | [MOUSE] - LOOK | [CLICK] - START</p>
+        <button class="btn" onclick="startApp()">INITIALIZE SYSTEM</button>
     </div>
 
     <div id="hud">
-        > SYSTEM: GEOSENSE v2.5<br>
-        > MODE: INTERACTIVE INVESTIGATION
+        NK FORENSIC TERMINAL v3.0<br>
+        STATUS: SCANNING SECTOR 250-KM<br>
+        SIGNAL: ENCRYPTED
     </div>
 
     <script>
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
+        let scene, camera, renderer, particles;
+        const keys = {};
 
-        // Grid Floor
-        const grid = new THREE.GridHelper(500, 100, 0x00ff66, 0x002200);
-        scene.add(grid);
+        function init() {
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x000000, 0.015);
 
-        // Lighting
-        const light = new THREE.PointLight(0x00ff66, 2, 300);
-        light.position.set(0, 20, 0);
-        scene.add(light);
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
 
-        // Evidence Boards with Collision/Interaction
-        function createBoard(img, x, z) {
+            // Lighting
+            const amb = new THREE.AmbientLight(0x404040, 3);
+            scene.add(amb);
+
+            // Neon Floor Grid
+            const grid = new THREE.GridHelper(400, 80, 0x00ff66, 0x001100);
+            scene.add(grid);
+
+            // Data Particles (The "Cyber" Feel)
+            const pGeometry = new THREE.BufferGeometry();
+            const pCount = 2000;
+            const pPos = new Float32Array(pCount * 3);
+            for(let i=0; i<pCount*3; i++) pPos[i] = (Math.random() - 0.5) * 200;
+            pGeometry.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+            const pMat = new THREE.PointsMaterial({ color: 0x00ff66, size: 0.1, transparent: true, opacity: 0.5 });
+            particles = new THREE.Points(pGeometry, pMat);
+            scene.add(particles);
+
+            // Floating Evidence Displays (Glass Effect)
+            createExhibit('Screenshot_20260407_150128_Maps.jpg', -20, -30, "DETECTION: 250KM JUMP");
+            createExhibit('Screenshot_20260407_151951_GPS Test.jpg', 0, -45, "ANALYSIS: NO GNSS FIX");
+            createExhibit('Screenshot_20260407_152237_GPS Test.jpg', 20, -30, "RESOLUTION: 3D FIX OK");
+
+            // Central Data Core
+            const coreGeo = new THREE.IcosahedronGeometry(4, 1);
+            const coreMat = new THREE.MeshBasicMaterial({ color: 0xff3333, wireframe: true });
+            const core = new THREE.Mesh(coreGeo, coreMat);
+            core.position.set(0, 5, -80);
+            scene.add(core);
+
+            camera.position.set(0, 5, 20);
+        }
+
+        function createExhibit(img, x, z, label) {
             const tex = new THREE.TextureLoader().load(img);
-            const mesh = new THREE.Mesh(
+            const plane = new THREE.Mesh(
                 new THREE.PlaneGeometry(12, 8),
                 new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide })
             );
-            mesh.position.set(x, 5, z);
-            scene.add(mesh);
-            
-            const frame = new THREE.Mesh(
-                new THREE.BoxGeometry(12.5, 8.5, 0.2),
-                new THREE.MeshBasicMaterial({ color: 0x00ff66, wireframe: true })
-            );
-            frame.position.set(x, 5, z);
+            plane.position.set(x, 6, z);
+            scene.add(plane);
+
+            // Neon Border
+            const edge = new THREE.BoxGeometry(12.5, 8.5, 0.2);
+            const edgeMat = new THREE.MeshBasicMaterial({ color: 0x00ff66, wireframe: true });
+            const frame = new THREE.Mesh(edge, edgeMat);
+            frame.position.set(x, 6, z);
             scene.add(frame);
         }
 
-        // Loading your screens
-        createBoard('Screenshot_20260407_150128_Maps.jpg', -20, -30);
-        createBoard('Screenshot_20260407_151951_GPS Test.jpg', 0, -40);
-        createBoard('Screenshot_20260407_152237_GPS Test.jpg', 20, -30);
+        function startApp() {
+            document.getElementById('instructions').style.display = 'none';
+            document.body.requestPointerLock();
+            animate();
+        }
 
-        camera.position.set(0, 5, 10);
-
-        // Movement Logic
-        const keys = {};
         document.addEventListener('keydown', (e) => keys[e.code] = true);
         document.addEventListener('keyup', (e) => keys[e.code] = false);
 
-        function updateMovement() {
-            const speed = 0.4;
-            if (keys['KeyW']) camera.translateZ(-speed);
-            if (keys['KeyS']) camera.translateZ(speed);
-            if (keys['KeyA']) camera.translateX(-speed);
-            if (keys['KeyD']) camera.translateX(speed);
-            camera.position.y = 5; // Keep height steady
-        }
-
-        // Mouse Look
         let yaw = 0, pitch = 0;
         document.addEventListener('mousemove', (e) => {
-            yaw -= e.movementX * 0.002;
-            pitch -= e.movementY * 0.002;
-            pitch = Math.max(-Math.PI/3, Math.min(Math.PI/3, pitch));
-            camera.rotation.set(pitch, yaw, 0, 'YXZ');
+            if (document.pointerLockElement === document.body) {
+                yaw -= e.movementX * 0.002;
+                pitch -= e.movementY * 0.002;
+                pitch = Math.max(-Math.PI/3, Math.min(Math.PI/3, pitch));
+                camera.rotation.set(pitch, yaw, 0, 'YXZ');
+            }
         });
-
-        // Request Pointer Lock for better feel
-        document.body.onclick = () => document.body.requestPointerLock();
 
         function animate() {
             requestAnimationFrame(animate);
-            updateMovement();
+            
+            const speed = 0.3;
+            if(keys['KeyW']) camera.translateZ(-speed);
+            if(keys['KeyS']) camera.translateZ(speed);
+            if(keys['KeyA']) camera.translateX(-speed);
+            if(keys['KeyD']) camera.translateX(speed);
+            camera.position.y = 5;
+
+            particles.rotation.y += 0.001;
             renderer.render(scene, camera);
         }
-        animate();
+
+        init();
     </script>
 </body>
 </html>
