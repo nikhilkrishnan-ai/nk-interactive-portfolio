@@ -1,161 +1,171 @@
 <!DOCTYPE html>
-<html lang="ml">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NK | GeoSense 3D Forensic Metaverse</title>
-    <!-- Three.js Library -->
+    <title>NK | GeoSense Forensic 3D Terminal</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         body { margin: 0; overflow: hidden; background-color: #000; font-family: 'Share Tech Mono', monospace; }
         
-        /* ഹെഡ്സെറ്റ് ലുക്ക് ഉള്ള യുഐ (UI) */
-        #overlay {
+        /* Tactical HUD Overlay */
+        #hud-overlay {
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
             pointer-events: none;
-            border: 20px solid rgba(0, 255, 102, 0.1);
+            border: 15px solid rgba(0, 255, 102, 0.05);
             box-sizing: border-box;
             z-index: 10;
         }
 
-        #dashboard {
+        #data-terminal {
             position: absolute;
             bottom: 30px; left: 30px;
-            color: #0f0;
-            background: rgba(0, 20, 0, 0.8);
+            color: #00ff66;
+            background: rgba(0, 15, 0, 0.85);
             padding: 20px;
-            border: 1px solid #0f0;
+            border-left: 4px solid #00ff66;
             font-size: 14px;
             z-index: 20;
+            box-shadow: 0 0 20px rgba(0, 255, 102, 0.2);
         }
 
-        .scanner-line {
+        .scanning-beam {
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 2px;
-            background: rgba(0, 255, 0, 0.3);
-            animation: scan 4s linear infinite;
+            background: rgba(0, 255, 102, 0.2);
+            animation: scanLine 5s linear infinite;
         }
 
-        @keyframes scan {
+        @keyframes scanLine {
             0% { top: 0; }
             100% { top: 100%; }
         }
 
-        #title-tag {
+        #header-title {
             position: absolute;
-            top: 30px; width: 100%;
+            top: 40px; width: 100%;
             text-align: center;
-            color: #fff;
-            text-shadow: 0 0 10px #0f0;
-            font-size: 24px;
-            letter-spacing: 5px;
+            color: #ffffff;
+            text-shadow: 0 0 15px #00ff66;
+            font-size: 26px;
+            letter-spacing: 6px;
             z-index: 20;
+            font-weight: bold;
+        }
+
+        .alert-text {
+            color: #ff3333;
+            animation: pulseAlert 1s infinite;
+        }
+
+        @keyframes pulseAlert {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
         }
     </style>
 </head>
 <body>
 
-    <div id="overlay">
-        <div class="scanner-line"></div>
+    <div id="hud-overlay">
+        <div class="scanning-beam"></div>
     </div>
 
-    <div id="title-tag">GEOSENSE FORENSIC METAVERSE</div>
+    <div id="header-title">GEOSENSE FORENSIC INVESTIGATION</div>
 
-    <div id="dashboard">
-        > USER: KRISHNAN NK (SR. DEVELOPER)<br>
-        > MISSION: ANALYZE 250KM JUMP<br>
-        > SYSTEM: 3D GNSS VISUALIZER<br>
-        > STATUS: <span style="color: #f00; animation: blink 1s infinite;">SPOOFING DETECTED</span>
+    <div id="data-terminal">
+        > IDENTITY: KRISHNAN NK (SR. FORENSIC DEVELOPER)<br>
+        > OBJECTIVE: ANALYZE 250KM OFFSHORE JUMP<br>
+        > MODULE: GEOSPATIAL SIGNAL INTEGRITY<br>
+        > THREAT LEVEL: <span class="alert-text">CRITICAL SPOOFING DETECTED</span>
     </div>
 
     <script>
-        // --- 3D സീൻ സെറ്റപ്പ് ---
+        // --- 3D Scene Initialization ---
         const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x000000, 0.02);
+        scene.fog = new THREE.FogExp2(0x000000, 0.015);
 
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
         document.body.appendChild(renderer.domElement);
 
-        // --- വെളിച്ചം (Lighting) ---
-        const ambientLight = new THREE.AmbientLight(0x404040, 2);
-        scene.add(ambientLight);
-        const pointLight = new THREE.PointLight(0x00ff66, 2, 100);
-        pointLight.position.set(0, 10, 10);
-        scene.add(pointLight);
+        // --- Global Illumination ---
+        const ambLight = new THREE.AmbientLight(0x404040, 2.5);
+        scene.add(ambLight);
+        const pntLight = new THREE.PointLight(0x00ff66, 1.5, 150);
+        pntLight.position.set(0, 15, 15);
+        scene.add(pntLight);
 
-        // --- ഫ്ലോർ (Bruno Simon Style Grid) ---
-        const grid = new THREE.GridHelper(200, 100, 0x00ff66, 0x002200);
-        scene.add(grid);
+        // --- Tactical Floor Grid ---
+        const gridHelper = new THREE.GridHelper(300, 80, 0x00ff66, 0x001a00);
+        scene.add(gridHelper);
 
-        // --- ഡാറ്റാ സ്ക്രീനുകൾ (Evidence Boards) ---
-        // നിന്റെ സ്ക്രീൻഷോട്ടുകൾ ഇവിടെ 3D ബോർഡുകളായി വരും
-        function createEvidenceBoard(url, x, z, title) {
-            const loader = new THREE.TextureLoader();
-            const geometry = new THREE.PlaneGeometry(8, 5);
+        // --- Forensic Evidence Boards ---
+        function addEvidenceBoard(imgSrc, x, z, rotationY) {
+            const texLoader = new THREE.TextureLoader();
+            const geometry = new THREE.PlaneGeometry(10, 6);
             const material = new THREE.MeshBasicMaterial({ 
-                color: 0xffffff,
-                side: THREE.DoubleSide,
-                map: loader.load(url) 
+                map: texLoader.load(imgSrc),
+                side: THREE.DoubleSide
             });
-            const plane = new THREE.Mesh(geometry, material);
-            plane.position.set(x, 4, z);
-            plane.rotation.y = Math.atan2(0 - x, 0 - z); // സെന്ററിലേക്ക് തിരിഞ്ഞു നിൽക്കാൻ
-            scene.add(plane);
+            const board = new THREE.Mesh(geometry, material);
+            board.position.set(x, 5, z);
+            board.rotation.y = rotationY;
+            scene.add(board);
 
-            // ബോർഡിന്റെ ഫ്രെയിം
-            const frameGeo = new THREE.BoxGeometry(8.2, 5.2, 0.1);
+            // Tech Frame
+            const frameGeo = new THREE.BoxGeometry(10.3, 6.3, 0.15);
             const frameMat = new THREE.MeshBasicMaterial({ color: 0x00ff66, wireframe: true });
             const frame = new THREE.Mesh(frameGeo, frameMat);
-            frame.position.set(x, 4, z);
-            frame.rotation.y = plane.rotation.y;
+            frame.position.set(x, 5, z);
+            frame.rotation.y = rotationY;
             scene.add(frame);
         }
 
-        // നിന്റെ ഫയലുകളുടെ പേര് കൃത്യമായി ഇവിടെ നൽകുക
-        createEvidenceBoard('Screenshot_20260407_150128_Maps.jpg', -15, -15, "The Jump");
-        createEvidenceBoard('Screenshot_20260407_151951_GPS Test.jpg', 0, -20, "No Fix Analysis");
-        createEvidenceBoard('Screenshot_20260407_152237_GPS Test.jpg', 15, -15, "Solution: 3D Fix");
+        // --- Load User Data ---
+        addEvidenceBoard('Screenshot_20260407_150128_Maps.jpg', -18, -15, 0.5);
+        addEvidenceBoard('Screenshot_20260407_151951_GPS Test.jpg', 0, -22, 0);
+        addEvidenceBoard('Screenshot_20260407_152237_GPS Test.jpg', 18, -15, -0.5);
 
-        // --- നടുവിലെ അനോമലി (The Pulsing Core) ---
-        const coreGeo = new THREE.IcosahedronGeometry(2, 1);
-        const coreMat = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
-        const core = new THREE.Mesh(coreGeo, coreMat);
-        core.position.y = 3;
-        scene.add(core);
+        // --- Core Anomaly (GPS Spoofing Representation) ---
+        const anomalyGeo = new THREE.IcosahedronGeometry(2.5, 1);
+        const anomalyMat = new THREE.MeshBasicMaterial({ color: 0xff3333, wireframe: true });
+        const anomalyCore = new THREE.Mesh(anomalyGeo, anomalyMat);
+        anomalyCore.position.y = 4;
+        scene.add(anomalyCore);
 
-        camera.position.set(0, 5, 20);
+        camera.position.set(0, 6, 25);
 
-        // --- ആനിമേഷൻ ലൂപ്പ് ---
+        // --- Rendering Loop ---
         function animate() {
             requestAnimationFrame(animate);
 
-            // കോർ കറങ്ങുകയും പൾസ് ചെയ്യുകയും ചെയ്യുന്നു
-            core.rotation.y += 0.01;
-            core.rotation.x += 0.005;
-            const scale = 1 + Math.sin(Date.now() * 0.003) * 0.3;
-            core.scale.set(scale, scale, scale);
+            // Core Anomaly Animation
+            anomalyCore.rotation.y += 0.015;
+            anomalyCore.rotation.z += 0.008;
+            const pulse = 1 + Math.sin(Date.now() * 0.004) * 0.25;
+            anomalyCore.scale.set(pulse, pulse, pulse);
 
             renderer.render(scene, camera);
         }
 
-        // മൗസ് മൂവ് ചെയ്യുമ്പോൾ ക്യാമറ നീങ്ങുന്നു (Interactive Feeling)
-        let mouseX = 0, mouseY = 0;
-        document.addEventListener('mousemove', (event) => {
-            mouseX = (event.clientX - window.innerWidth / 2) * 0.05;
-            mouseY = (event.clientY - window.innerHeight / 2) * 0.05;
+        // --- Interactive Camera Control ---
+        let targetX = 0, targetY = 0;
+        document.addEventListener('mousemove', (e) => {
+            targetX = (e.clientX - window.innerWidth / 2) * 0.04;
+            targetY = (e.clientY - window.innerHeight / 2) * 0.04;
             
-            camera.position.x += (mouseX - camera.position.x) * 0.05;
-            camera.position.y += (-mouseY + 5 - camera.position.y) * 0.05;
-            camera.lookAt(core.position);
+            camera.position.x += (targetX - camera.position.x) * 0.05;
+            camera.position.y += (-targetY + 6 - camera.position.y) * 0.05;
+            camera.lookAt(anomalyCore.position);
         });
 
+        // Window Resize Handler
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
