@@ -3,53 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NK | GeoSense Forensic Lab v7.1</title>
+    <title>NK | GeoSense Forensic Lab v7.5</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         body { margin: 0; overflow: hidden; background-color: #000; font-family: 'Share Tech Mono', monospace; }
+        
         #loading-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: radial-gradient(circle, #001a00 0%, #000 100%);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
             z-index: 9999; color: #00ff66;
         }
         .glitch { font-family: 'Orbitron', sans-serif; font-size: 4rem; letter-spacing: 15px; text-shadow: 2px 0 #ff0000, -2px 0 #0000ff; animation: glitch 1s infinite; text-align: center; }
         @keyframes glitch { 0% { transform: translate(0); } 20% { transform: translate(-2px, 2px); } 40% { transform: translate(-2px, -2px); } 60% { transform: translate(2px, 2px); } 80% { transform: translate(2px, -2px); } 100% { transform: translate(0); } }
         
+        .profession-badge {
+            margin-top: 15px; padding: 8px 30px; border: 1px solid #00ff66;
+            background: rgba(0, 255, 102, 0.15); font-size: 16px; letter-spacing: 4px;
+            text-transform: uppercase; color: #fff; font-weight: bold;
+            box-shadow: 0 0 20px rgba(0, 255, 102, 0.2);
+        }
+
         .btn { background: transparent; color: #00ff66; border: 1px solid #00ff66; padding: 20px 50px; cursor: pointer; font-family: inherit; font-size: 1.2rem; letter-spacing: 5px; transition: 0.5s; margin-top: 40px; text-transform: uppercase; }
         .btn:hover { background: #00ff66; color: #000; box-shadow: 0 0 50px #00ff66; }
         
-        #hud { position: absolute; bottom: 40px; left: 40px; color: #00ff66; background: rgba(0, 10, 0, 0.85); padding: 25px; border-left: 5px solid #00ff66; pointer-events: none; line-height: 1.6; z-index: 50; }
+        #hud { position: absolute; bottom: 40px; left: 40px; color: #00ff66; background: rgba(0, 10, 0, 0.9); padding: 30px; border-left: 5px solid #00ff66; pointer-events: none; line-height: 1.8; z-index: 50; }
         #decrypt-zone { position: absolute; top: 40px; right: 40px; z-index: 100; }
-        .decrypt-btn { background: rgba(255, 0, 0, 0.2); color: #ff3333; border: 1px solid #ff3333; padding: 10px 20px; cursor: pointer; font-family: inherit; font-weight: bold; letter-spacing: 2px; transition: 0.3s; }
+        .decrypt-btn { background: rgba(255, 0, 0, 0.2); color: #ff3333; border: 1px solid #ff3333; padding: 12px 25px; cursor: pointer; font-family: inherit; font-weight: bold; letter-spacing: 2px; transition: 0.3s; text-transform: uppercase; }
         .decrypt-btn:hover { background: #ff3333; color: #fff; box-shadow: 0 0 20px #ff3333; }
         .decrypted { color: #00ff66 !important; border-color: #00ff66 !important; background: rgba(0, 255, 102, 0.1) !important; }
 
         #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; border: 1px solid rgba(0, 255, 102, 0.3); border-radius: 50%; pointer-events: none; }
-        .operator-name { letter-spacing: 2px; font-weight: bold; color: #fff; }
+        .operator-name { letter-spacing: 2px; font-weight: bold; color: #fff; text-transform: uppercase; }
         .highlight-red { color: #ff3333; font-weight: bold; }
+        .title-text { font-size: 11px; opacity: 0.7; letter-spacing: 1px; color: #00ff66; text-transform: uppercase; }
+        
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
     </style>
 </head>
 <body>
 
     <div id="loading-screen">
         <div class="glitch">GEOSENSE</div>
-        <p>SYSTEM ACCESS GRANTED: <span class="operator-name">NIKHIL KRISHNAN [NK]</span></p>
-        <button class="btn" onclick="startApp()">START 3D INVESTIGATION</button>
+        <p>AUTHORIZATION GRANTED: <span class="operator-name">NIKHIL KRISHNAN [NK]</span></p>
+        <div class="profession-badge">Lead Geospatial Forensic Intelligence Expert</div>
+        <button class="btn" onclick="startApp()">Enter Investigation Core</button>
     </div>
 
     <div id="decrypt-zone">
-        <button id="decrypt-trigger" class="decrypt-btn" onclick="runDecryption()">DECRYPT ANOMALY</button>
+        <button id="decrypt-trigger" class="decrypt-btn" onclick="runDecryption()">Execute Decryption</button>
     </div>
 
     <div id="crosshair"></div>
     <div id="hud">
-        NK FORENSIC LAB v7.1 | <span style="color: #fff">OPERATOR: <span class="operator-name">NIKHIL KRISHNAN [NK]</span></span><br>
-        SECTOR: <span class="highlight-red">RUWAIS OFFSHORE ANOMALY</span><br>
-        ANOMALY: 250KM GULF SPOOFING DETECTED<br>
-        STATUS: <span id="status-text" style="color: #ff3333; animation: blink 1s infinite;">CRITICAL ERROR IN GNSS DATA</span><br>
+        <span class="title-text">IDENTITY:</span> <span class="operator-name">NIKHIL KRISHNAN [NK]</span><br>
+        <span class="title-text">RANK:</span> <span style="color: #fff; font-weight: bold;">LEAD GEOSPATIAL FORENSIC INTELLIGENCE EXPERT</span><br>
+        <span class="title-text">ASSIGNMENT:</span> <span class="highlight-red">RUWAIS OFFSHORE SPOOFING ANALYSIS</span><br>
+        <span class="title-text">SYSTEM:</span> <span id="status-text" style="color: #ff3333; animation: blink 1s infinite;">INTEGRITY COMPROMISED</span><br>
         ------------------------------------------<br>
-        W,A,S,D - MOVE | MOUSE - LOOK
+        W,A,S,D - NAVIGATION | MOUSE - TARGET SCAN
     </div>
 
     <script>
@@ -81,7 +94,7 @@
             for(let i=0; i<pCount*3; i++) pPos[i] = (Math.random() - 0.5) * 1000;
             pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
             const pMat = new THREE.PointsMaterial({ color: 0x00ff66, size: 0.15, transparent: true, opacity: 0.6 });
-            particles = new THREE.Points(pGeo, pMat);
+            particles = new Points(pGeo, pMat);
             scene.add(particles);
 
             const loader = new THREE.TextureLoader();
@@ -110,12 +123,9 @@
             laser.position.set(0, 30, -100);
             scene.add(laser);
 
-            // EVIDENCE EXHIBITS
             createDisplay('Screenshot_20260407_150128_Maps.jpg', -60, -120);
             createDisplay('Screenshot_20260407_151951_GPS Test.jpg', 0, -150);
             createDisplay('Screenshot_20260407_152237_GPS Test.jpg', 60, -120);
-
-            // POWER BI DATA VISUAL WALL (Placed prominently)
             createDisplay('power_bi_real visual.jpg', 0, -70, 45, 28); 
 
             camera.position.set(0, 10, 60);
@@ -139,18 +149,16 @@
             if (isDecrypted) return;
             const btn = document.getElementById('decrypt-trigger');
             const status = document.getElementById('status-text');
-            btn.innerText = "VERIFYING RUWAIS SECTOR DATA...";
+            btn.innerText = "PENETRATING RUWAIS ENCRYPTION...";
             setTimeout(() => {
                 isDecrypted = true;
-                btn.innerText = "SPOOFING CONFIRMED";
+                btn.innerText = "ACCESS SECURED";
                 btn.classList.add('decrypted');
-                status.innerText = "ANOMALY RESOLVED: 250KM JUMP IDENTIFIED IN RUWAIS";
+                status.innerText = "SPOOFING VERIFIED: SOURCE NEUTRALIZED";
                 status.style.color = "#00ff66";
                 status.style.animation = "none";
                 laser.material.color.set(0x00ff66);
-                particles.material.size = 0.3;
-                setTimeout(() => particles.material.size = 0.15, 1000);
-            }, 2000);
+            }, 2500);
         }
 
         function startApp() {
