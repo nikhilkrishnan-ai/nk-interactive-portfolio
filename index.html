@@ -3,183 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NK | GeoSense Forensic Laboratory v5.0</title>
-    <!-- Three.js Engine -->
+    <title>NK | GeoSense Forensic Lab v6.0</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
     <style>
         body { margin: 0; overflow: hidden; background-color: #000; font-family: 'Share Tech Mono', monospace; }
-        
-        /* Initialization Screen */
         #loading-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, #001a00 0%, #000000 100%);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 9999; transition: opacity 1s ease;
+            background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 9999; color: #00ff66;
         }
-
-        .cyber-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 3rem; color: #00ff66; letter-spacing: 15px;
-            text-shadow: 0 0 20px #00ff66; margin-bottom: 20px; text-align: center;
-        }
-
-        .start-btn {
-            background: transparent; color: #00ff66; border: 2px solid #00ff66;
-            padding: 15px 40px; font-size: 1.2rem; cursor: pointer;
-            text-transform: uppercase; letter-spacing: 5px; font-family: inherit;
-            transition: 0.3s; box-shadow: 0 0 15px rgba(0, 255, 102, 0.3);
-        }
-
-        .start-btn:hover { background: #00ff66; color: #000; box-shadow: 0 0 30px #00ff66; }
-
-        /* HUD & UI */
-        #hud-container {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; border: 20px solid rgba(0, 255, 102, 0.05); box-sizing: border-box;
-        }
-
-        #terminal-info {
-            position: absolute; bottom: 40px; left: 40px; color: #00ff66;
-            background: rgba(0, 20, 0, 0.8); padding: 25px; border-left: 5px solid #00ff66;
-            font-size: 14px; line-height: 1.8; text-shadow: 0 0 5px #00ff66;
-        }
-
-        #crosshair {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 30px; height: 30px; border: 1px solid rgba(0, 255, 102, 0.4); border-radius: 50%;
-        }
-
-        .alert-red { color: #ff3333; animation: blink 1s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+        .glitch { font-family: 'Orbitron', sans-serif; font-size: 4rem; letter-spacing: 15px; text-shadow: 2px 0 #ff0000, -2px 0 #0000ff; animation: glitch 1s infinite; text-align: center; }
+        @keyframes glitch { 0% { transform: translate(0); } 20% { transform: translate(-2px, 2px); } 40% { transform: translate(-2px, -2px); } 60% { transform: translate(2px, 2px); } 80% { transform: translate(2px, -2px); } 100% { transform: translate(0); } }
+        .btn { background: transparent; color: #00ff66; border: 1px solid #00ff66; padding: 20px 50px; cursor: pointer; font-family: inherit; font-size: 1.2rem; letter-spacing: 5px; transition: 0.5s; margin-top: 40px; text-transform: uppercase; }
+        .btn:hover { background: #00ff66; color: #000; box-shadow: 0 0 50px #00ff66; }
+        #hud { position: absolute; bottom: 40px; left: 40px; color: #00ff66; background: rgba(0, 10, 0, 0.85); padding: 25px; border-left: 5px solid #00ff66; pointer-events: none; line-height: 1.6; }
+        #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; border: 1px solid rgba(0, 255, 102, 0.3); border-radius: 50%; pointer-events: none; }
     </style>
 </head>
 <body>
 
     <div id="loading-screen">
-        <div class="cyber-title">GEOSENSE v5.0</div>
-        <p style="color: #00ff66; margin-bottom: 30px;">AUTHORIZING FORENSIC ACCESS...</p>
-        <button class="start-btn" onclick="launchExperience()">Initialize Terminal</button>
+        <div class="glitch">GEOSENSE</div>
+        <p>SYSTEM ACCESS GRANTED: KRISHNAN NK</p>
+        <button class="btn" onclick="startApp()">START 3D INVESTIGATION</button>
     </div>
 
-    <div id="hud-container">
-        <div id="crosshair"></div>
-        <div id="terminal-info">
-            > OPERATOR: KRISHNAN NK<br>
-            > DEPT: SENIOR GEOSPATIAL FORENSICS<br>
-            > STATUS: <span class="alert-red">SPOOFING DETECTED - OFFSHORE JUMP 250KM</span><br>
-            > CONTROLS: [W,A,S,D] WALK | [MOUSE] ROTATE VIEW
-        </div>
+    <div id="crosshair"></div>
+    <div id="hud">
+        NK FORENSIC LAB v6.0 | <span style="color: #fff">OPERATOR: NK</span><br>
+        ANOMALY: 250KM GULF SPOOFING<br>
+        STATUS: <span style="color: #ff3333; animation: blink 1s infinite;">CRITICAL ERROR DETECTED</span><br>
+        ------------------------------------------<br>
+        W,A,S,D - MOVE | MOUSE - LOOK
     </div>
 
     <script>
-        let scene, camera, renderer, particles, satModel, laser;
+        let scene, camera, renderer, particles, mapTable, laser, holoProfile;
         const keys = {};
 
         function init() {
             scene = new THREE.Scene();
-            scene.fog = new THREE.FogExp2(0x000000, 0.015);
+            scene.fog = new THREE.FogExp2(0x000000, 0.012);
 
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
-            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
             document.body.appendChild(renderer.domElement);
 
             // Lighting
-            const amb = new THREE.AmbientLight(0x404040, 3);
-            scene.add(amb);
-            const pnt = new THREE.PointLight(0x00ff66, 2, 300);
+            scene.add(new THREE.AmbientLight(0xffffff, 1.8));
+            const pnt = new THREE.PointLight(0x00ff66, 3, 500);
             pnt.position.set(0, 50, 0);
             scene.add(pnt);
 
-            // Floor Grid (The "Bruno Simon" Grid)
-            const grid = new THREE.GridHelper(1000, 100, 0x00ff66, 0x001a00);
+            // Infinite Floor Grid
+            const grid = new THREE.GridHelper(2000, 100, 0x00ff66, 0x001100);
             scene.add(grid);
 
-            // Data Particles
+            // Cyber Particles
             const pGeo = new THREE.BufferGeometry();
-            const pCount = 8000;
+            const pCount = 12000;
             const pPos = new Float32Array(pCount * 3);
-            for(let i=0; i<pCount*3; i++) pPos[i] = (Math.random() - 0.5) * 600;
+            for(let i=0; i<pCount*3; i++) pPos[i] = (Math.random() - 0.5) * 1000;
             pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
             const pMat = new THREE.PointsMaterial({ color: 0x00ff66, size: 0.15, transparent: true, opacity: 0.6 });
             particles = new THREE.Points(pGeo, pMat);
             scene.add(particles);
 
-            // NK HOLOGRAM PROFILE (image_4.png)
-            createIdentityHologram();
+            // 1. IDENTITY HOLOGRAM (Your CEO Look)
+            const loader = new THREE.TextureLoader();
+            loader.load('r6sb37yz31rg80cxzmyv2k3rm4_result_0.jpg', function(tex) {
+                const profileGeo = new THREE.CircleGeometry(15, 64);
+                const profileMat = new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide, transparent: true, opacity: 0.9 });
+                holoProfile = new THREE.Mesh(profileGeo, profileMat);
+                holoProfile.position.set(0, 25, -40);
+                scene.add(holoProfile);
 
-            // EVIDENCE EXHIBITS
-            addEvidence('Screenshot_20260407_150128_Maps.jpg', -40, -60, "TARGET: 250KM JUMP");
-            addEvidence('Screenshot_20260407_151951_GPS Test.jpg', 0, -85, "DIAGNOSTIC: NO FIX");
-            addEvidence('Screenshot_20260407_152237_GPS Test.jpg', 40, -60, "RECOVERY: 3D LOCK");
+                const ring = new THREE.Mesh(new THREE.TorusGeometry(15.5, 0.3, 16, 100), new THREE.MeshBasicMaterial({ color: 0x00ffcc }));
+                ring.position.set(0, 25, -40);
+                scene.add(ring);
+            });
 
-            // NOVA SATELLITE & LASER
-            createSatelliteSystem();
+            // 2. THE CENTRAL MAP TABLE
+            const tableGeo = new THREE.CylinderGeometry(25, 27, 2, 32);
+            const tableMat = new THREE.MeshBasicMaterial({ color: 0x00ff66, wireframe: true });
+            mapTable = new THREE.Mesh(tableGeo, tableMat);
+            mapTable.position.set(0, 1, -100);
+            scene.add(mapTable);
 
-            camera.position.set(0, 10, 30);
-        }
-
-        function createIdentityHologram() {
-            const tex = new THREE.TextureLoader().load('r6sb37yz31rg80cxzmyv2k3rm4_result_0.jpg');
-            const geo = new THREE.CircleGeometry(8, 64);
-            const mat = new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide, transparent: true, opacity: 0.95 });
-            const holo = new THREE.Mesh(geo, mat);
-            holo.position.set(0, 18, -30);
-            scene.add(holo);
-
-            // Neon Pulse Ring
-            const ringGeo = new THREE.TorusGeometry(8.5, 0.1, 16, 100);
-            const ringMat = new THREE.MeshBasicMaterial({ color: 0x00ffff });
-            const ring = new THREE.Mesh(ringGeo, ringMat);
-            ring.position.set(0, 18, -30);
-            scene.add(ring);
-            
-            // Orbiting code blocks
-            for(let i=0; i<3; i++) {
-                const box = new THREE.Mesh(new THREE.BoxGeometry(4, 2, 0.1), new THREE.MeshBasicMaterial({ color: 0x00ff66, wireframe: true }));
-                box.position.set(Math.cos(i) * 15, 18, -30 + Math.sin(i) * 10);
-                scene.add(box);
-            }
-        }
-
-        function addEvidence(url, x, z, tag) {
-            const tex = new THREE.TextureLoader().load(url);
-            const board = new THREE.Mesh(new THREE.PlaneGeometry(24, 15), new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide }));
-            board.position.set(x, 12, z);
-            board.lookAt(0, 12, 0);
-            scene.add(board);
-
-            const frame = new THREE.Mesh(new THREE.BoxGeometry(24.5, 15.5, 0.5), new THREE.MeshBasicMaterial({ color: 0x00ff66, wireframe: true }));
-            frame.position.set(x, 12, z);
-            frame.lookAt(0, 12, 0);
-            scene.add(frame);
-        }
-
-        function createSatelliteSystem() {
-            satModel = new THREE.Group();
-            const body = new THREE.Mesh(new THREE.OctahedronGeometry(6, 0), new THREE.MeshBasicMaterial({ color: 0x00ffff, wireframe: true }));
-            satModel.add(body);
-            satModel.position.set(0, 100, -200);
-            scene.add(satModel);
-
-            // Laser Beam
-            const lGeo = new THREE.CylinderGeometry(0.5, 5, 300, 16);
-            const lMat = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.6 });
-            laser = new THREE.Mesh(lGeo, lMat);
-            laser.position.set(0, -100, -200);
+            // Jump Connection Laser
+            const laserGeo = new THREE.CylinderGeometry(0.5, 0.5, 120, 8);
+            const laserMat = new THREE.MeshBasicMaterial({ color: 0xff3333, transparent: true, opacity: 0.8 });
+            laser = new THREE.Mesh(laserGeo, laserMat);
+            laser.rotation.z = Math.PI / 3;
+            laser.position.set(0, 30, -100);
             scene.add(laser);
+
+            // 3. EVIDENCE EXHIBITS
+            createDisplay('Screenshot_20260407_150128_Maps.jpg', -60, -120);
+            createDisplay('Screenshot_20260407_151951_GPS Test.jpg', 0, -150);
+            createDisplay('Screenshot_20260407_152237_GPS Test.jpg', 60, -120);
+
+            camera.position.set(0, 10, 60);
         }
 
-        function launchExperience() {
+        function createDisplay(url, x, z) {
+            new THREE.TextureLoader().load(url, function(tex) {
+                const mesh = new THREE.Mesh(new THREE.PlaneGeometry(35, 22), new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide }));
+                mesh.position.set(x, 18, z);
+                mesh.lookAt(0, 18, 0);
+                scene.add(mesh);
+
+                const frame = new THREE.Mesh(new THREE.BoxGeometry(35.5, 22.5, 0.6), new THREE.MeshBasicMaterial({ color: 0x00ff66, wireframe: true }));
+                frame.position.set(x, 18, z);
+                frame.lookAt(0, 18, 0);
+                scene.add(frame);
+            });
+        }
+
+        function startApp() {
             document.getElementById('loading-screen').style.opacity = '0';
             setTimeout(() => document.getElementById('loading-screen').style.display = 'none', 1000);
             document.body.requestPointerLock();
             animate();
         }
 
-        // Input Handlers
         document.addEventListener('keydown', (e) => keys[e.code] = true);
         document.addEventListener('keyup', (e) => keys[e.code] = false);
 
@@ -195,19 +145,17 @@
 
         function animate() {
             requestAnimationFrame(animate);
-
-            const speed = 0.6;
+            const speed = 0.8;
             if(keys['KeyW']) camera.translateZ(-speed);
             if(keys['KeyS']) camera.translateZ(speed);
             if(keys['KeyA']) camera.translateX(-speed);
             if(keys['KeyD']) camera.translateX(speed);
             camera.position.y = 10;
 
-            particles.rotation.y += 0.0005;
-            if(satModel) {
-                satModel.rotation.y += 0.02;
-                laser.material.opacity = 0.4 + Math.sin(Date.now() * 0.01) * 0.3;
-            }
+            particles.rotation.y += 0.0008;
+            if(holoProfile) holoProfile.rotation.y += 0.01;
+            if(mapTable) mapTable.rotation.y += 0.005;
+            laser.material.opacity = 0.4 + Math.sin(Date.now() * 0.01) * 0.4;
 
             renderer.render(scene, camera);
         }
