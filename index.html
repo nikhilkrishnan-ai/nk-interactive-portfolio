@@ -15,10 +15,19 @@
         }
         .glitch { font-family: 'Orbitron', sans-serif; font-size: 4rem; letter-spacing: 15px; text-shadow: 2px 0 #ff0000, -2px 0 #0000ff; animation: glitch 1s infinite; text-align: center; }
         @keyframes glitch { 0% { transform: translate(0); } 20% { transform: translate(-2px, 2px); } 40% { transform: translate(-2px, -2px); } 60% { transform: translate(2px, 2px); } 80% { transform: translate(2px, -2px); } 100% { transform: translate(0); } }
+        
         .btn { background: transparent; color: #00ff66; border: 1px solid #00ff66; padding: 20px 50px; cursor: pointer; font-family: inherit; font-size: 1.2rem; letter-spacing: 5px; transition: 0.5s; margin-top: 40px; text-transform: uppercase; }
         .btn:hover { background: #00ff66; color: #000; box-shadow: 0 0 50px #00ff66; }
-        #hud { position: absolute; bottom: 40px; left: 40px; color: #00ff66; background: rgba(0, 10, 0, 0.85); padding: 25px; border-left: 5px solid #00ff66; pointer-events: none; line-height: 1.6; }
+        
+        #hud { position: absolute; bottom: 40px; left: 40px; color: #00ff66; background: rgba(0, 10, 0, 0.85); padding: 25px; border-left: 5px solid #00ff66; pointer-events: none; line-height: 1.6; z-index: 50; }
+        #decrypt-zone { position: absolute; top: 40px; right: 40px; z-index: 100; }
+        .decrypt-btn { background: rgba(255, 0, 0, 0.2); color: #ff3333; border: 1px solid #ff3333; padding: 10px 20px; cursor: pointer; font-family: inherit; font-weight: bold; letter-spacing: 2px; transition: 0.3s; }
+        .decrypt-btn:hover { background: #ff3333; color: #fff; box-shadow: 0 0 20px #ff3333; }
+        .decrypted { color: #00ff66 !important; border-color: #00ff66 !important; background: rgba(0, 255, 102, 0.1) !important; }
+
         #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; border: 1px solid rgba(0, 255, 102, 0.3); border-radius: 50%; pointer-events: none; }
+        
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
     </style>
 </head>
 <body>
@@ -29,17 +38,22 @@
         <button class="btn" onclick="startApp()">START 3D INVESTIGATION</button>
     </div>
 
+    <div id="decrypt-zone">
+        <button id="decrypt-trigger" class="decrypt-btn" onclick="runDecryption()">DECRYPT ANOMALY</button>
+    </div>
+
     <div id="crosshair"></div>
     <div id="hud">
         NK FORENSIC LAB v6.0 | <span style="color: #fff">OPERATOR: NIKHIL KRISHNAN NK</span><br>
         ANOMALY: 250KM GULF SPOOFING<br>
-        STATUS: <span style="color: #ff3333; animation: blink 1s infinite;">CRITICAL ERROR DETECTED</span><br>
+        STATUS: <span id="status-text" style="color: #ff3333; animation: blink 1s infinite;">CRITICAL ERROR DETECTED</span><br>
         ------------------------------------------<br>
         W,A,S,D - MOVE | MOUSE - LOOK
     </div>
 
     <script>
         let scene, camera, renderer, particles, mapTable, laser, holoProfile;
+        let isDecrypted = false;
         const keys = {};
 
         function init() {
@@ -123,6 +137,29 @@
             });
         }
 
+        function runDecryption() {
+            if (isDecrypted) return;
+            const btn = document.getElementById('decrypt-trigger');
+            const status = document.getElementById('status-text');
+            
+            btn.innerText = "DECRYPTING...";
+            
+            // Simulation of decryption
+            setTimeout(() => {
+                isDecrypted = true;
+                btn.innerText = "SYSTEM SECURED";
+                btn.classList.add('decrypted');
+                status.innerText = "ANOMALY RESOLVED: SOURCE IDENTIFIED";
+                status.style.color = "#00ff66";
+                status.style.animation = "none";
+                laser.material.color.set(0x00ff66);
+                
+                // Add success effect: boost particles
+                particles.material.size = 0.3;
+                setTimeout(() => particles.material.size = 0.15, 1000);
+            }, 2000);
+        }
+
         function startApp() {
             document.getElementById('loading-screen').style.opacity = '0';
             setTimeout(() => document.getElementById('loading-screen').style.display = 'none', 1000);
@@ -155,7 +192,12 @@
             particles.rotation.y += 0.0008;
             if(holoProfile) holoProfile.rotation.y += 0.01;
             if(mapTable) mapTable.rotation.y += 0.005;
-            laser.material.opacity = 0.4 + Math.sin(Date.now() * 0.01) * 0.4;
+            
+            if (!isDecrypted) {
+                laser.material.opacity = 0.4 + Math.sin(Date.now() * 0.01) * 0.4;
+            } else {
+                laser.material.opacity = 0.8 + Math.sin(Date.now() * 0.005) * 0.2;
+            }
 
             renderer.render(scene, camera);
         }
