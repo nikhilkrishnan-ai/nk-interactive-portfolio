@@ -28,13 +28,16 @@
         #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; border: 1px solid rgba(0, 255, 102, 0.3); border-radius: 50%; pointer-events: none; }
         
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+
+        /* Typography spacing fix for name */
+        .operator-name { letter-spacing: 2px; font-weight: bold; color: #fff; }
     </style>
 </head>
 <body>
 
     <div id="loading-screen">
         <div class="glitch">GEOSENSE</div>
-        <p>SYSTEM ACCESS GRANTED: NIKHIL KRISHNAN NK</p>
+        <p>SYSTEM ACCESS GRANTED: <span class="operator-name">NIKHIL KRISHNAN [NK]</span></p>
         <button class="btn" onclick="startApp()">START 3D INVESTIGATION</button>
     </div>
 
@@ -44,7 +47,7 @@
 
     <div id="crosshair"></div>
     <div id="hud">
-        NK FORENSIC LAB v6.0 | <span style="color: #fff">OPERATOR: NIKHIL KRISHNAN NK</span><br>
+        NK FORENSIC LAB v6.0 | <span style="color: #fff">OPERATOR: <span class="operator-name">NIKHIL KRISHNAN [NK]</span></span><br>
         ANOMALY: 250KM GULF SPOOFING<br>
         STATUS: <span id="status-text" style="color: #ff3333; animation: blink 1s infinite;">CRITICAL ERROR DETECTED</span><br>
         ------------------------------------------<br>
