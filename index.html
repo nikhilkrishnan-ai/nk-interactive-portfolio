@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NK | GeoSense Forensic Lab v7.5</title>
+    <title>NK | GeoSense Forensic Lab v7.6</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -94,10 +94,12 @@
             for(let i=0; i<pCount*3; i++) pPos[i] = (Math.random() - 0.5) * 1000;
             pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
             const pMat = new THREE.PointsMaterial({ color: 0x00ff66, size: 0.15, transparent: true, opacity: 0.6 });
-            particles = new Points(pGeo, pMat);
+            particles = new THREE.Points(pGeo, pMat); // Fixed: added THREE. prefix
             scene.add(particles);
 
             const loader = new THREE.TextureLoader();
+            
+            // Hologram Profile
             loader.load('r6sb37yz31rg80cxzmyv2k3rm4_result_0.jpg', function(tex) {
                 const profileGeo = new THREE.CircleGeometry(15, 64);
                 const profileMat = new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide, transparent: true, opacity: 0.9 });
@@ -123,9 +125,12 @@
             laser.position.set(0, 30, -100);
             scene.add(laser);
 
+            // Evidence Boards
             createDisplay('Screenshot_20260407_150128_Maps.jpg', -60, -120);
             createDisplay('Screenshot_20260407_151951_GPS Test.jpg', 0, -150);
             createDisplay('Screenshot_20260407_152237_GPS Test.jpg', 60, -120);
+            
+            // Power BI Visual (Filename must match GitHub exactly)
             createDisplay('power_bi_real visual.jpg', 0, -70, 45, 28); 
 
             camera.position.set(0, 10, 60);
@@ -142,6 +147,8 @@
                 frame.position.set(x, 18, z);
                 frame.lookAt(0, 18, 0);
                 scene.add(frame);
+            }, undefined, function(err) {
+                console.warn("Could not load image:", url);
             });
         }
 
@@ -157,14 +164,14 @@
                 status.innerText = "SPOOFING VERIFIED: SOURCE NEUTRALIZED";
                 status.style.color = "#00ff66";
                 status.style.animation = "none";
-                laser.material.color.set(0x00ff66);
+                if(laser) laser.material.color.set(0x00ff66);
             }, 2500);
         }
 
         function startApp() {
             document.getElementById('loading-screen').style.opacity = '0';
             setTimeout(() => document.getElementById('loading-screen').style.display = 'none', 1000);
-            document.body.requestPointerLock();
+            if (document.body.requestPointerLock) document.body.requestPointerLock();
             animate();
         }
 
@@ -189,10 +196,15 @@
             if(keys['KeyA']) camera.translateX(-speed);
             if(keys['KeyD']) camera.translateX(speed);
             camera.position.y = 10;
-            particles.rotation.y += 0.0008;
+            
+            if(particles) particles.rotation.y += 0.0008;
             if(holoProfile) holoProfile.rotation.y += 0.01;
             if(mapTable) mapTable.rotation.y += 0.005;
-            laser.material.opacity = isDecrypted ? (0.8 + Math.sin(Date.now() * 0.005) * 0.2) : (0.4 + Math.sin(Date.now() * 0.01) * 0.4);
+            
+            if(laser) {
+                laser.material.opacity = isDecrypted ? (0.8 + Math.sin(Date.now() * 0.005) * 0.2) : (0.4 + Math.sin(Date.now() * 0.01) * 0.4);
+            }
+            
             renderer.render(scene, camera);
         }
 
