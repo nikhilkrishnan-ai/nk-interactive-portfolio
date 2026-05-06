@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NK | GeoSense Forensic Lab v6.0</title>
+    <title>NK | GeoSense Forensic Lab v7.0</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
     <style>
@@ -26,10 +26,6 @@
         .decrypted { color: #00ff66 !important; border-color: #00ff66 !important; background: rgba(0, 255, 102, 0.1) !important; }
 
         #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; border: 1px solid rgba(0, 255, 102, 0.3); border-radius: 50%; pointer-events: none; }
-        
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
-
-        /* Typography spacing fix for name */
         .operator-name { letter-spacing: 2px; font-weight: bold; color: #fff; }
     </style>
 </head>
@@ -47,7 +43,7 @@
 
     <div id="crosshair"></div>
     <div id="hud">
-        NK FORENSIC LAB v6.0 | <span style="color: #fff">OPERATOR: <span class="operator-name">NIKHIL KRISHNAN [NK]</span></span><br>
+        NK FORENSIC LAB v7.0 | <span style="color: #fff">OPERATOR: <span class="operator-name">NIKHIL KRISHNAN [NK]</span></span><br>
         ANOMALY: 250KM GULF SPOOFING<br>
         STATUS: <span id="status-text" style="color: #ff3333; animation: blink 1s infinite;">CRITICAL ERROR DETECTED</span><br>
         ------------------------------------------<br>
@@ -69,17 +65,14 @@
             renderer.setPixelRatio(window.devicePixelRatio);
             document.body.appendChild(renderer.domElement);
 
-            // Lighting
             scene.add(new THREE.AmbientLight(0xffffff, 1.8));
             const pnt = new THREE.PointLight(0x00ff66, 3, 500);
             pnt.position.set(0, 50, 0);
             scene.add(pnt);
 
-            // Infinite Floor Grid
             const grid = new THREE.GridHelper(2000, 100, 0x00ff66, 0x001100);
             scene.add(grid);
 
-            // Cyber Particles
             const pGeo = new THREE.BufferGeometry();
             const pCount = 12000;
             const pPos = new Float32Array(pCount * 3);
@@ -89,7 +82,6 @@
             particles = new THREE.Points(pGeo, pMat);
             scene.add(particles);
 
-            // 1. IDENTITY HOLOGRAM (Your CEO Look)
             const loader = new THREE.TextureLoader();
             loader.load('r6sb37yz31rg80cxzmyv2k3rm4_result_0.jpg', function(tex) {
                 const profileGeo = new THREE.CircleGeometry(15, 64);
@@ -103,14 +95,12 @@
                 scene.add(ring);
             });
 
-            // 2. THE CENTRAL MAP TABLE
             const tableGeo = new THREE.CylinderGeometry(25, 27, 2, 32);
             const tableMat = new THREE.MeshBasicMaterial({ color: 0x00ff66, wireframe: true });
             mapTable = new THREE.Mesh(tableGeo, tableMat);
             mapTable.position.set(0, 1, -100);
             scene.add(mapTable);
 
-            // Jump Connection Laser
             const laserGeo = new THREE.CylinderGeometry(0.5, 0.5, 120, 8);
             const laserMat = new THREE.MeshBasicMaterial({ color: 0xff3333, transparent: true, opacity: 0.8 });
             laser = new THREE.Mesh(laserGeo, laserMat);
@@ -118,22 +108,25 @@
             laser.position.set(0, 30, -100);
             scene.add(laser);
 
-            // 3. EVIDENCE EXHIBITS
+            // EVIDENCE EXHIBITS
             createDisplay('Screenshot_20260407_150128_Maps.jpg', -60, -120);
             createDisplay('Screenshot_20260407_151951_GPS Test.jpg', 0, -150);
             createDisplay('Screenshot_20260407_152237_GPS Test.jpg', 60, -120);
 
+            // NEW: POWER BI DATA VISUAL WALL
+            createDisplay('power_bi_real visual.jpg', 0, -60, 40, 25); 
+
             camera.position.set(0, 10, 60);
         }
 
-        function createDisplay(url, x, z) {
+        function createDisplay(url, x, z, width = 35, height = 22) {
             new THREE.TextureLoader().load(url, function(tex) {
-                const mesh = new THREE.Mesh(new THREE.PlaneGeometry(35, 22), new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide }));
+                const mesh = new THREE.Mesh(new THREE.PlaneGeometry(width, height), new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide }));
                 mesh.position.set(x, 18, z);
                 mesh.lookAt(0, 18, 0);
                 scene.add(mesh);
 
-                const frame = new THREE.Mesh(new THREE.BoxGeometry(35.5, 22.5, 0.6), new THREE.MeshBasicMaterial({ color: 0x00ff66, wireframe: true }));
+                const frame = new THREE.Mesh(new THREE.BoxGeometry(width + 0.5, height + 0.5, 0.6), new THREE.MeshBasicMaterial({ color: 0x00ff66, wireframe: true }));
                 frame.position.set(x, 18, z);
                 frame.lookAt(0, 18, 0);
                 scene.add(frame);
@@ -144,20 +137,15 @@
             if (isDecrypted) return;
             const btn = document.getElementById('decrypt-trigger');
             const status = document.getElementById('status-text');
-            
             btn.innerText = "DECRYPTING...";
-            
-            // Simulation of decryption
             setTimeout(() => {
                 isDecrypted = true;
                 btn.innerText = "SYSTEM SECURED";
                 btn.classList.add('decrypted');
-                status.innerText = "ANOMALY RESOLVED: SOURCE IDENTIFIED";
+                status.innerText = "ANOMALY RESOLVED: POWER BI VERIFIED";
                 status.style.color = "#00ff66";
                 status.style.animation = "none";
                 laser.material.color.set(0x00ff66);
-                
-                // Add success effect: boost particles
                 particles.material.size = 0.3;
                 setTimeout(() => particles.material.size = 0.15, 1000);
             }, 2000);
@@ -191,17 +179,10 @@
             if(keys['KeyA']) camera.translateX(-speed);
             if(keys['KeyD']) camera.translateX(speed);
             camera.position.y = 10;
-
             particles.rotation.y += 0.0008;
             if(holoProfile) holoProfile.rotation.y += 0.01;
             if(mapTable) mapTable.rotation.y += 0.005;
-            
-            if (!isDecrypted) {
-                laser.material.opacity = 0.4 + Math.sin(Date.now() * 0.01) * 0.4;
-            } else {
-                laser.material.opacity = 0.8 + Math.sin(Date.now() * 0.005) * 0.2;
-            }
-
+            laser.material.opacity = isDecrypted ? (0.8 + Math.sin(Date.now() * 0.005) * 0.2) : (0.4 + Math.sin(Date.now() * 0.01) * 0.4);
             renderer.render(scene, camera);
         }
 
