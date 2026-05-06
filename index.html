@@ -2,100 +2,93 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>NK | GeoSense Forensic Lab 3.0</title>
+    <title>NK | GeoSense Forensic Lab v4.0</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; overflow: hidden; background-color: #000; font-family: 'Share Tech Mono', monospace; }
+        body { margin: 0; overflow: hidden; background-color: #000; font-family: 'Share Tech Mono', monospace; color: #00ff66; }
         #instructions {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            color: #00ff66; text-align: center; background: rgba(0, 10, 0, 0.9);
-            padding: 30px; border: 1px solid #00ff66; z-index: 100;
-            box-shadow: 0 0 30px rgba(0, 255, 102, 0.2);
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 10, 0, 0.95); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 1000;
         }
-        #hud { position: absolute; top: 20px; right: 20px; color: #00ff66; text-align: right; pointer-events: none; }
-        .btn { background: #00ff66; color: #000; border: none; padding: 10px 20px; cursor: pointer; font-family: inherit; font-weight: bold; margin-top: 15px; }
+        #hud { position: absolute; bottom: 20px; left: 20px; font-size: 14px; pointer-events: none; }
+        .btn { background: #00ff66; color: #000; border: none; padding: 15px 30px; cursor: pointer; font-family: inherit; font-weight: bold; margin-top: 20px; text-transform: uppercase; letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
     <div id="instructions">
-        <h1 style="letter-spacing: 5px;">GEOSENSE FORENSIC LAB</h1>
-        <p>ENTER THE 3D INVESTIGATION ENVIRONMENT</p>
-        <p style="font-size: 12px; opacity: 0.7;">[W,A,S,D] - MOVE | [MOUSE] - LOOK | [CLICK] - START</p>
-        <button class="btn" onclick="startApp()">INITIALIZE SYSTEM</button>
+        <h1 style="font-size: 48px; letter-spacing: 10px; text-shadow: 0 0 20px #00ff66;">GEOSENSE v4.0</h1>
+        <p style="font-size: 18px; margin-top: -10px;">INITIALIZING FORENSIC ENVIRONMENT</p>
+        <p style="font-size: 12px; opacity: 0.7;">[W,A,S,D] - MOVE | [MOUSE] - LOOK</p>
+        <button class="btn" onclick="initializeSystem()">ACCESS MAIN TERMINAL</button>
     </div>
 
     <div id="hud">
-        NK FORENSIC TERMINAL v3.0<br>
-        STATUS: SCANNING SECTOR 250-KM<br>
-        SIGNAL: ENCRYPTED
+        NK FORENSIC TECHNOLOGIES | <span style="color: #fff">OPERATOR: KRISHNAN NK (SR. DEV)</span><br>
+        STATUS: ONLINE | SECTOR: GULF_250KM_JUMP<br>
+        [ALERT] CRITICAL SPOOFING DETECTED
     </div>
 
     <script>
-        let scene, camera, renderer, particles;
+        // --- Core Scene ---
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x000000, 0.012);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // --- Lighting ---
+        scene.add(new THREE.AmbientLight(0x404040, 2.5));
+        const spot = new THREE.PointLight(0x00ff66, 2, 200);
+        spot.position.set(0, 30, 0);
+        scene.add(spot);
+
+        // --- Neon Floor Grid ---
+        const gridHelper = new THREE.GridHelper(500, 100, 0x00ff66, 0x001a00);
+        scene.add(gridHelper);
+
+        // --- Particle System ---
+        const pGeometry = new THREE.BufferGeometry();
+        const pCount = 5000;
+        const pPos = new Float32Array(pCount * 3);
+        for(let i=0; i<pCount*3; i++) pPos[i] = (Math.random() - 0.5) * 300;
+        pGeometry.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+        const pMat = new THREE.PointsMaterial({ color: 0x00ff66, size: 0.1, transparent: true, opacity: 0.4 });
+        const particles = new THREE.Points(pGeometry, pMat);
+        scene.add(particles);
+
+        // --- Evidence Displays ---
+        createExhibit('Screenshot_20260407_150128_Maps.jpg', -30, -50, "Zone A: DETECTION");
+        createExhibit('Screenshot_20260407_151951_GPS Test.jpg', 0, -65, "Zone B: ANALYSIS");
+        createExhibit('Screenshot_20260407_152237_GPS Test.jpg', 30, -50, "Zone C: RESOLUTION");
+
+        // --- Floating Code (Holographic Data) ---
+        createCodeStream(-15, 10, -40, "NK_GeoSense_Spoof_Analyzer.py");
+        createCodeStream(15, 10, -40, "GNSS_Integrity_Restore.py");
+
+        // --- The Nova Satellite Model (Abstract) ---
+        const satGeo = new THREE.BoxGeometry(10, 5, 2);
+        const satMat = new THREE.MeshBasicMaterial({ color: 0x00ffff, wireframe: true });
+        const sat = new THREE.Mesh(satGeo, satMat);
+        sat.position.set(0, 40, -100);
+        scene.add(sat);
+
+        // --- Satellite Laser Beam (Pulsing) ---
+        const laserGeo = new THREE.CylinderGeometry(0.5, 0.5, 150, 8);
+        const laserMat = new THREE.MeshBasicMaterial({ color: 0xff3333, transparent: true, opacity: 0.8 });
+        const laser = new THREE.Mesh(laserGeo, laserMat);
+        laser.position.set(0, -35, -100);
+        scene.add(laser);
+
+        camera.position.set(0, 5, 20);
+
+        // --- Input Logic ---
         const keys = {};
-
-        function init() {
-            scene = new THREE.Scene();
-            scene.fog = new THREE.FogExp2(0x000000, 0.015);
-
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            document.body.appendChild(renderer.domElement);
-
-            // Lighting
-            const amb = new THREE.AmbientLight(0x404040, 3);
-            scene.add(amb);
-
-            // Neon Floor Grid
-            const grid = new THREE.GridHelper(400, 80, 0x00ff66, 0x001100);
-            scene.add(grid);
-
-            // Data Particles (The "Cyber" Feel)
-            const pGeometry = new THREE.BufferGeometry();
-            const pCount = 2000;
-            const pPos = new Float32Array(pCount * 3);
-            for(let i=0; i<pCount*3; i++) pPos[i] = (Math.random() - 0.5) * 200;
-            pGeometry.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-            const pMat = new THREE.PointsMaterial({ color: 0x00ff66, size: 0.1, transparent: true, opacity: 0.5 });
-            particles = new THREE.Points(pGeometry, pMat);
-            scene.add(particles);
-
-            // Floating Evidence Displays (Glass Effect)
-            createExhibit('Screenshot_20260407_150128_Maps.jpg', -20, -30, "DETECTION: 250KM JUMP");
-            createExhibit('Screenshot_20260407_151951_GPS Test.jpg', 0, -45, "ANALYSIS: NO GNSS FIX");
-            createExhibit('Screenshot_20260407_152237_GPS Test.jpg', 20, -30, "RESOLUTION: 3D FIX OK");
-
-            // Central Data Core
-            const coreGeo = new THREE.IcosahedronGeometry(4, 1);
-            const coreMat = new THREE.MeshBasicMaterial({ color: 0xff3333, wireframe: true });
-            const core = new THREE.Mesh(coreGeo, coreMat);
-            core.position.set(0, 5, -80);
-            scene.add(core);
-
-            camera.position.set(0, 5, 20);
-        }
-
-        function createExhibit(img, x, z, label) {
-            const tex = new THREE.TextureLoader().load(img);
-            const plane = new THREE.Mesh(
-                new THREE.PlaneGeometry(12, 8),
-                new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide })
-            );
-            plane.position.set(x, 6, z);
-            scene.add(plane);
-
-            // Neon Border
-            const edge = new THREE.BoxGeometry(12.5, 8.5, 0.2);
-            const edgeMat = new THREE.MeshBasicMaterial({ color: 0x00ff66, wireframe: true });
-            const frame = new THREE.Mesh(edge, edgeMat);
-            frame.position.set(x, 6, z);
-            scene.add(frame);
-        }
-
-        function startApp() {
+        function initializeSystem() {
             document.getElementById('instructions').style.display = 'none';
             document.body.requestPointerLock();
             animate();
@@ -114,21 +107,47 @@
             }
         });
 
+        // --- Main Functions ---
+        function createExhibit(img, x, z, label) {
+            const tex = new THREE.TextureLoader().load(img);
+            const plane = new THREE.Mesh(new THREE.PlaneGeometry(16, 10), new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide }));
+            plane.position.set(x, 7, z);
+            scene.add(plane);
+
+            const edge = new THREE.BoxGeometry(16.5, 10.5, 0.3);
+            const edgeMat = new THREE.MeshBasicMaterial({ color: 0x00ff66, wireframe: true });
+            const frame = new THREE.Mesh(edge, edgeMat);
+            frame.position.set(x, 7, z);
+            scene.add(frame);
+        }
+
+        function createCodeStream(x, y, z, filename) {
+            const geometry = new THREE.BoxGeometry(5, 8, 0.1);
+            const material = new THREE.MeshBasicMaterial({ color: 0x00ff66, wireframe: true, transparent: true, opacity: 0.5 });
+            const codeCube = new THREE.Mesh(geometry, material);
+            codeCube.position.set(x, y, z);
+            scene.add(codeCube);
+        }
+
+        // --- Animation Loop ---
         function animate() {
             requestAnimationFrame(animate);
-            
-            const speed = 0.3;
+
+            const speed = 0.4;
             if(keys['KeyW']) camera.translateZ(-speed);
             if(keys['KeyS']) camera.translateZ(speed);
             if(keys['KeyA']) camera.translateX(-speed);
             if(keys['KeyD']) camera.translateX(speed);
-            camera.position.y = 5;
+            camera.position.y = 5; // Fixed height
 
-            particles.rotation.y += 0.001;
+            particles.rotation.y += 0.0005;
+            sat.rotation.y += 0.01;
+            laserMat.opacity = 0.5 + Math.sin(Date.now() * 0.008) * 0.3; // Laser pulse
+
             renderer.render(scene, camera);
         }
 
-        init();
+        animate();
     </script>
 </body>
 </html>
