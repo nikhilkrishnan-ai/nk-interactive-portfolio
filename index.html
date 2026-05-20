@@ -120,17 +120,17 @@
 
             const loader = new THREE.TextureLoader();
             
-            // 1. IDENTITY HOLOGRAM
-            loader.load('r6sb37yz31rg80cxzmyv2k3rm4_result_0.jpg', function(tex) {
-                const geo = new THREE.CircleGeometry(25, 64);
-                holoProfile = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide, transparent: true, opacity: 0.95 }));
-                holoProfile.position.set(0, 45, -70);
-                scene.add(holoProfile);
-                
-                const ring = new THREE.Mesh(new THREE.TorusGeometry(25.5, 0.4, 16, 100), new THREE.MeshBasicMaterial({ color: 0x00ffcc }));
-                ring.position.set(0, 45, -70);
-                scene.add(ring);
-            });
+            // 1. IDENTITY HOLOGRAM (NEW PHOTO UPDATED BY NK)
+loader.load('hologram_new.png', function(tex) {
+    const geo = new THREE.CircleGeometry(25, 64);
+    holoProfile = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide, transparent: true, opacity: 0.95 }));
+    holoProfile.position.set(0, 45, -70);
+    scene.add(holoProfile);
+    
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(25.5, 0.4, 16, 100), new THREE.MeshBasicMaterial({ color: 0x00ffcc }));
+    ring.position.set(0, 45, -70);
+    scene.add(ring);
+});
 
             // 2. THE INVESTIGATION TABLE
             const tableGeo = new THREE.CylinderGeometry(40, 45, 4, 32);
