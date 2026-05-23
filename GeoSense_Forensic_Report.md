@@ -28,11 +28,13 @@ The analysis proves a Targeted GNSS Spoofing Attack. The signal transition exhib
 
 The GeoSense Engine successfully:
 
-Isolated the spoofed signal cluster using Euclidean Distance Filtering.
+- Isolated the spoofed signal cluster using Euclidean Distance Filtering.
 
-Cross-verified the anomaly using Power BI Spatiotemporal Mapping.
+- Cross-verified the anomaly using Power BI Spatiotemporal Mapping.
 
-Restored signal integrity by applying a cryptographic forensic patch.
+- Deployed the containerized real-time telemetry parsing API on **Google Cloud Run** for serverless scaling.
+
+- Restored signal integrity by applying a cryptographic forensic patch.
 
 Expert Bio:
 Nikhil Krishnan [NK] is a Lead Geospatial Forensic Intelligence Expert dedicated to securing global navigation systems. He developed the GeoSense platform to protect maritime and logistics assets from digital manipulation.
