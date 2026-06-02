@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Nikhil Krishnan — Senior Software Developer & AI Solutions Architect from Chengannur, Kerala. Specializing in advanced geospatial telemetry diagnostics, WebGL analytics environments, and intelligent data systems.">
+    <meta name="description" content="Nikhil Krishnan — Senior Software Developer & AI Solutions Architect from Chengannur, Kerala. Specializing in advanced geospatial telemetry diagnostics, WebGL analytics, and intelligent data systems.">
     <meta name="keywords" content="Nikhil Krishnan, Nikhil Krishnan Chengannur, Senior Software Developer Chengannur, AI Solutions Architect Kerala, Software Engineer Chengannur, nikhilkrishnan.dev">
     
     <!-- Open Graph / SEO Social Metadata -->
@@ -261,72 +261,77 @@
             border: none;
         }
 
-        /* Forensic Analysis Case Files Grid */
-        .evidence-grid {
+        /* Stats & Metrics Grid */
+        .metrics-showcase {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 60px auto;
+            max-width: 1200px;
+            padding: 0 20px;
         }
 
-        .evidence-card {
+        .metric-item {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 6px;
-            overflow: hidden;
-            transition: all 0.3s ease;
+            border-radius: 8px;
+            padding: 30px 20px;
+            text-align: center;
         }
 
-        .evidence-card:hover {
-            border-color: var(--neon-green);
-            transform: translateY(-5px);
+        .metric-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--neon-green);
+            margin-bottom: 10px;
         }
 
-        .evidence-card img {
-            width: 100%;
-            height: 220px;
-            object-fit: cover;
-            border-bottom: 1px solid var(--border-color);
-            filter: grayscale(20%) brightness(90%);
+        .metric-label {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .card-body {
-            padding: 25px;
+        /* Footer & Engagement */
+        .engagement-cta {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 2px solid var(--neon-green);
+            padding: 60px 40px;
+            text-align: center;
+            margin: 80px 20px;
+            border-radius: 12px;
         }
 
-        .card-body h3 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.2rem;
-            margin: 0 0 10px 0;
+        .engagement-cta h2 {
+            font-size: 2.2rem;
+            margin: 0 0 20px 0;
             color: #fff;
         }
 
-        .card-body p {
-            font-size: 0.95rem;
+        .engagement-cta p {
+            font-size: 1.1rem;
             color: var(--text-muted);
-            line-height: 1.5;
-            margin: 0;
+            max-width: 600px;
+            margin: 0 auto 30px auto;
         }
 
-        /* Executive Footer */
         footer {
             max-width: 1200px;
-            margin: 100px auto 40px auto;
-            padding: 40px 20px 0 20px;
+            margin: 0 auto;
+            padding: 40px 20px;
             border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-family: 'Share Tech Mono', monospace;
+            text-align: center;
             color: var(--text-muted);
             font-size: 0.9rem;
         }
 
         @media (max-width: 768px) {
-            .hero h1 { font-size: 2.3rem; }
+            header { flex-direction: column; gap: 20px; }
+            .hero h1 { font-size: 2.2rem; }
             .hero .subtitle { font-size: 1.1rem; }
-            .iframe-wrapper { height: 400px; }
-            header, footer { flex-direction: column; gap: 20px; text-align: center; }
+            .iframe-wrapper { height: 300px; }
+            .engagement-cta { padding: 40px 20px; }
         }
     </style>
 </head>
@@ -335,401 +340,72 @@
 <!-- GLOBAL NAVIGATION BAR -->
 <nav class="global-nav">
     <div class="nav-container">
-        <a href="https://nikhilkrishnan.dev" class="nav-brand">GEONODE LABS</a>
+        <a href="index.html" class="nav-brand">GEONODE LABS</a>
         <div class="nav-links">
-            <a href="https://nikhilkrishnan.dev">Services</a>
-            <a href="https://nikhilkrishnan.dev">Case Study</a>
-            <a href="https://nikhilkrishnan.dev">Pricing</a>
-            <a href="https://nikhilkrishnan.dev" class="nav-cta">Scoping Portal</a>
+            <a href="services/index.html">Services</a>
+            <a href="case-studies/geosense.html">Case Study</a>
+            <a href="pricing-models.html">Pricing</a>
+            <a href="scoping.html" class="nav-cta">Scoping Portal</a>
         </div>
     </div>
 </nav>
 
-    <header>
-        <div class="logo">NK // SYSTEM ARCHITECT</div>
-        <div class="status-badge">🟢 TELEMETRY SYSTEM: ACTIVE</div>
-    </header>
+<header>
+    <div class="logo">NK</div>
+    <span class="status-badge">🔴 ACTIVE</span>
+</header>
 
-    <main>
-        <section class="hero">
-            <h1>NIKHIL KRISHNAN <span>[NK]</span></h1>
-            <p class="subtitle">Senior Software Developer & AI Solutions Architect. Specializing in advanced geospatial telemetry diagnostics, custom WebGL analytics environments, and intelligent data systems.</p>
-            <a href="#live-lab" class="cta-btn">Initialize Core Lab</a>
-        </section>
+<div class="hero">
+    <h1>NIKHIL KRISHNAN <span>[NK]</span></h1>
+    <div class="subtitle">Senior Software Developer & AI Solutions Architect | Geospatial Telemetry | WebGL Infrastructure</div>
+    <a href="services/index.html" class="cta-btn">→ View Services</a>
+</div>
 
-        <section class="showcase-container" id="live-lab">
-            <h2 class="section-title">01 / INTERACTIVE GRAPHICS ENGINE</h2>
-            
-            <div class="live-window-container">
-                <div class="window-header">
-                    <div class="window-dots">
-                        <div class="dot r"></div>
-                        <div class="dot y"></div>
-                        <div class="dot g"></div>
-                    </div>
-                    <div>geosense_forensic_lab_v6.0.sys</div>
-                    <div style="color: var(--neon-green)">LIVE_RENDER</div>
-                </div>
-                <div class="iframe-wrapper">
-<iframe src="lab.html"></iframe>    
-                </div>
-            </div>
-        </section>
-
-        <section class="showcase-container">
-            <h2 class="section-title">02 / DECRYPTED CASE FILE: 250KM GULF SPOOFING</h2>
-            
-            <div class="evidence-grid">
-                <div class="evidence-card">
-                    <img src="Screenshot_20260407_150128_Maps.jpg" alt="Anomalous Drift Manifestation">
-                    <div class="card-body">
-                        <h3>Telemetry Drift Detection</h3>
-                        <p>Instantaneous offshore coordinate hopping identified during raw data ingestion. Isolate timestamp log matching satellite delta drift metrics.</p>
-                    </div>
-                </div>
-
-                <div class="evidence-card">
-                    <img src="Screenshot_20260407_151951_GPS Test.jpg" alt="Signal Matrix Diagnostic">
-                    <div class="card-body">
-                        <h3>Signal Constellation Analysis</h3>
-                        <p>Validating NMEA sentence structures and signal-to-noise configurations to confirm artificial attenuation versus authentic environmental occlusion.</p>
-                    </div>
-                </div>
-
-                <div class="evidence-card">
-                    <img src="Screenshot_20260407_152237_GPS Test.jpg" alt="Anomaly Neutralization Matrix">
-                    <div class="card-body">
-                        <h3>Anomaly Resolved</h3>
-                        <p>Execution of custom telemetry filters to counter localized spoofing patterns, successfully securing coordinate accuracy back to original datum points.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <style>
-        footer {
-            max-width: 1200px;
-            margin: 100px auto 40px auto;
-            padding: 40px 20px 0 20px;
-            border-top: 1px solid var(--border-color);
-            font-family: 'Share Tech Mono', monospace;
-        }
-
-        .hologram-section-title {
-            font-size: 0.9.5rem;
-            color: var(--neon-blue);
-            letter-spacing: 2px;
-            margin-bottom: 25px;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .hologram-section-title::after {
-            content: '';
-            flex-grow: 1;
-            height: 1px;
-            background: linear-gradient(90deg, rgba(0,255,204,0.3), transparent);
-        }
-
-        .hologram-matrix-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 15px;
-            margin-bottom: 50px;
-        }
-
-        .hologram-node {
-            background: rgba(13, 13, 13, 0.6);
-            border: 1px solid rgba(31, 41, 55, 0.8);
-            padding: 15px 20px;
-            position: relative;
-            text-decoration: none;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        /* High-Tech Hologram Scanline Effect */
-        .hologram-node::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(0, 255, 102, 0) 95%, rgba(0, 255, 102, 0.15) 100%);
-            background-size: 100% 20px;
-            animation: holo-scan 4s linear infinite;
-            pointer-events: none;
-            opacity: 0.4;
-        }
-
-        .hologram-node:hover {
-            border-color: var(--neon-green);
-            background: rgba(0, 255, 102, 0.02);
-            transform: translateY(-3px);
-            box-shadow: 0 0 20px rgba(0, 255, 102, 0.1), inset 0 0 10px rgba(0, 255, 102, 0.05);
-        }
-
-        .hologram-node:hover .node-title {
-            color: var(--neon-green);
-            text-shadow: 0 0 8px rgba(0, 255, 102, 0.5);
-        }
-
-        .hologram-node:hover .node-status {
-            color: #fff;
-        }
-
-        .node-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.95rem;
-            color: var(--text-main);
-            letter-spacing: 1px;
-            transition: color 0.3s ease;
-        }
-
-        .node-status {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            letter-spacing: 0.5px;
-            transition: color 0.3s ease;
-        }
-
-        .footer-lower {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            border-top: 1px solid var(--border-color);
-            padding-top: 25px;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        @keyframes holo-scan {
-            0% { background-position: 0 0; }
-            100% { background-position: 0 500px; }
-        }
-
-        @media (max-width: 768px) {
-            .hologram-matrix-grid { grid-template-columns: 1fr 1fr; }
-            .footer-lower { flex-direction: column; gap: 15px; text-align: center; }
-        }
-        @media (max-width: 480px) {
-            .hologram-matrix-grid { grid-template-columns: 1fr; }
-        }
-    </style>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <style>
-        .cyber-footer {
-            max-width: 1200px;
-            margin: 120px auto 40px auto;
-            padding: 60px 20px 0 20px;
-            border-top: 1px solid #1f2937;
-            font-family: 'Share Tech Mono', monospace;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 40px;
-        }
-
-        .footer-left-identity {
-            flex: 0 0 280px;
-        }
-
-        .hologram-section-title {
-            font-size: 0.95rem;
-            color: #00ffcc; /* Neon Blue */
-            letter-spacing: 2px;
-            line-height: 1.5;
-            text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
-        }
-
-        .footer-right-matrix {
-            flex: 1;
-        }
-
-        .hologram-matrix-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr) !important;
-            gap: 16px;
-            width: 100%;
-        }
-
-        .hologram-node {
-            background: rgba(10, 10, 10, 0.8) !important;
-            border: 1px solid #1f2937 !important;
-            padding: 20px 15px !important;
-            position: relative;
-            text-decoration: none;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            display: flex;
-            flex-direction: column;
-            align-items: center; /* Icons നടുവിൽ വരാൻ */
-            justify-content: center;
-            gap: 10px;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.6);
-            min-height: 100px;
-        }
-
-        /* Pure Hologram Laser Scanline Effect */
-        .hologram-node::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(0, 255, 102, 0) 94%, rgba(0, 255, 102, 0.2) 100%);
-            background-size: 100% 12px;
-            animation: holo-scan 6s linear infinite;
-            pointer-events: none;
-            opacity: 0.6;
-        }
-
-        .hologram-node:hover {
-            border-color: #00ff66 !important; /* Neon Green */
-            background: rgba(0, 255, 102, 0.03) !important;
-            transform: translateY(-4px);
-            box-shadow: 0 0 25px rgba(0, 255, 102, 0.15), inset 0 0 10px rgba(0, 255, 102, 0.05);
-        }
-
-        /* Icon Styling */
-        .hologram-node i {
-            font-size: 1.8rem;
-            color: #f3f4f6;
-            transition: all 0.3s ease;
-        }
-
-        .hologram-node:hover i {
-            color: #00ff66 !important;
-            transform: scale(1.1);
-            text-shadow: 0 0 10px rgba(0, 255, 102, 0.8);
-        }
-
-        .hologram-node:hover .node-title {
-            color: #00ff66 !important;
-            text-shadow: 0 0 8px rgba(0, 255, 102, 0.6);
-        }
-
-        .hologram-node:hover .node-status {
-            color: #ffffff !important;
-        }
-
-        .node-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.8rem;
-            color: #f3f4f6;
-            letter-spacing: 1px;
-            transition: color 0.3s ease;
-            text-align: center;
-        }
-
-        .node-status {
-            font-size: 0.65rem;
-            color: #9ca3af;
-            letter-spacing: 0.5px;
-            transition: color 0.3s ease;
-            text-transform: uppercase;
-            text-align: center;
-        }
-
-        .footer-lower {
-            max-width: 1200px;
-            margin: 40px auto 20px auto;
-            padding: 20px 20px 0 20px;
-            border-top: 1px solid #111;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.8rem;
-            color: #9ca3af;
-        }
-
-        @keyframes holo-scan {
-            0% { background-position: 0 0; }
-            100% { background-position: 0 400px; }
-        }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .hologram-matrix-grid { grid-template-columns: repeat(2, 1fr) !important; }
-            .cyber-footer { flex-direction: column; gap: 30px; }
-            .footer-left-identity { flex: none; width: 100%; }
-        }
-        @media (max-width: 500px) {
-            .hologram-matrix-grid { grid-template-columns: 1fr !important; }
-            .footer-lower { flex-direction: column; gap: 15px; text-align: center; }
-        }
-    </style>
-
-    <footer class="cyber-footer">
-        <div class="footer-left-identity">
-            <div class="hologram-section-title">
-                INITIALIZE HOLOGRAM<br>NODE MATRIX //<br>IDENTITY VERIFICATION
+<div class="showcase-container">
+    <div class="section-title">Live 3D Laboratory Environment</div>
+    <div class="live-window-container">
+        <div class="window-header">
+            <span style="font-weight: bold;">geosense-forensic-engine.webgl</span>
+            <div class="window-dots">
+                <div class="dot r"></div>
+                <div class="dot y"></div>
+                <div class="dot g"></div>
             </div>
         </div>
-        
-        <div class="footer-right-matrix">
-            <div class="hologram-matrix-grid">
-                <a href="https://www.linkedin.com/in/nikhil-krishnan-ai/" target="_blank" class="hologram-node">
-                    <i class="fab fa-linkedin-in"></i>
-                    <div class="node-title">LINKEDIN</div>
-                    <div class="node-status">// NODE_ACTIVE</div>
-                </a>
-
-                <a href="https://github.com/nikhilkrishnan-ai" target="_blank" class="hologram-node">
-                    <i class="fab fa-github"></i>
-                    <div class="node-title">GITHUB</div>
-                    <div class="node-status">// CORE_REPOS</div>
-                </a>
-
-                <a href="mailto:nikhilkr51@gmail.com" class="hologram-node">
-                    <i class="far fa-envelope"></i>
-                    <div class="node-title">GMAIL</div>
-                    <div class="node-status">// SECURE_COMMS</div>
-                </a>
-
-                <a href="tel:+919048871505" class="hologram-node">
-                    <i class="fas fa-phone-alt"></i>
-                    <div class="node-title">+91 9048•• ••05</div>
-                    <div class="node-status">// PHONE_DIRECT</div>
-                </a>
-
-                <a href="https://www.instagram.com/iam_nikhilkrishnan/" target="_blank" class="hologram-node">
-                    <i class="fab fa-instagram"></i>
-                    <div class="node-title">INSTAGRAM</div>
-                    <div class="node-status">// LOG_STREAM</div>
-                </a>
-
-                <a href="https://www.youtube.com/@nikhilkrishnan4867" target="_blank" class="hologram-node">
-                    <i class="fab fa-youtube"></i>
-                    <div class="node-title">YOUTUBE</div>
-                    <div class="node-status">// BROADCAST</div>
-                </a>
-
-                <a href="https://x.com/NIKHILKRISHNAN" target="_blank" class="hologram-node">
-                    <i class="fab fa-x-twitter"></i>
-                    <div class="node-title">X.COM</div>
-                    <div class="node-status">// FEED_LIVE</div>
-                </a>
-
-                <a href="https://www.facebook.com/nikhiiii" target="_blank" class="hologram-node">
-                    <i class="fab fa-facebook-f"></i>
-                    <div class="node-title">FACEBOOK</div>
-                    <div class="node-status">// LEGACY_NODE</div>
-                </a>
-            </div>
+        <div class="iframe-wrapper">
+            <iframe src="lab.html"></iframe>
         </div>
-    </footer>
-
-    <div class="footer-lower">
-        <div>© 2026 NIKHIL KRISHNAN NK. ALL RIGHTS RESERVED.</div>
-        <div style="color: #00ff66; letter-spacing: 1px;">SECURE CONTEXT // ARCHITECTED BY NK</div>
     </div>
+</div>
+
+<div class="metrics-showcase">
+    <div class="metric-item">
+        <div class="metric-number">50+</div>
+        <div class="metric-label">Enterprise Solutions</div>
+    </div>
+    <div class="metric-item">
+        <div class="metric-number">&lt;30ms</div>
+        <div class="metric-label">System Latency</div>
+    </div>
+    <div class="metric-item">
+        <div class="metric-number">100%</div>
+        <div class="metric-label">Cloud Native</div>
+    </div>
+    <div class="metric-item">
+        <div class="metric-number">24/7</div>
+        <div class="metric-label">Infrastructure</div>
+    </div>
+</div>
+
+<div class="engagement-cta">
+    <h2>Need High-Performance Infrastructure?</h2>
+    <p>Custom architecture design, serverless deployments, and AI-driven telemetry systems built for national B2B benchmarks.</p>
+    <a href="services/index.html" class="cta-btn">→ Explore Solutions</a>
+</div>
+
+<footer>
+    <p>&copy; 2025 Nikhil Krishnan. All rights reserved. | <a href="https://github.com/nikhilkrishnan-ai" style="color: var(--neon-green);">GitHub</a> | <a href="https://www.linkedin.com/in/nikhil-krishnan-ai/" style="color: var(--neon-green);">LinkedIn</a></p>
+</footer>
+
 </body>
 </html>
