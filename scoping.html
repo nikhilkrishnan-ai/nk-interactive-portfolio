@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technical Scoping Protocol | Geonode Labs</title>
+    <meta name="robots" content="noindex, nofollow">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --accent: #38bdf8;
+            --accent-hover: #0ea5e9;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --form-bg: #0b0f19;
+        }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 2rem 1rem;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* Breadcrumb Navigation */
+        .breadcrumb {
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+        .breadcrumb a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        header {
+            margin-bottom: 3rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 2rem;
+        }
+        h1 { font-size: 2.2rem; margin: 0 0 0.5rem 0; color: #fff; }
+        .subtitle { color: var(--text-muted); font-size: 1.05rem; margin: 0; }
+
+        /* Scoping Form Container */
+        .scoping-card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 2.5rem;
+        }
+        
+        .section-title {
+            font-size: 1.15rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin: 2rem 0 1rem 0;
+            border-bottom: 1px dashed var(--border);
+            padding-bottom: 0.5rem;
+        }
+        .section-title:first-of-type { margin-top: 0; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .full-width { grid-column: 1 / -1; }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        label span {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-weight: normal;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 0.85rem;
+            background: var(--form-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+        }
+        
+        /* Checkbox Grouping */
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            cursor: pointer;
+            background: var(--form-bg);
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+        .checkbox-label input {
+            width: auto;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .btn-submit {
+            background: var(--accent);
+            color: #0f172a;
+            border: none;
+            padding: 1.2rem;
+            font-size: 1.05rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 1.5rem;
+        }
+        .btn-submit:hover {
+            background: var(--accent-hover);
+            box-shadow: 0 4px 20px rgba(56, 189, 248, 0.3);
+        }
+        
+        .protocol-footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <!-- BREADCRUMB -->
+    <div class="breadcrumb">
+        <a href="pricing-models.html">← View Engagement Models</a> / Architecture Protocol
+    </div>
+
+    <!-- HEADER -->
+    <header>
+        <h1>Initialize Technical Scoping Request</h1>
+        <div class="subtitle">Submit your infrastructure constraints and performance parameters directly to Geonode Labs.</div>
+    </header>
+
+    <!-- ARCHITECTURE SCOPING FORM -->
+    <div class="scoping-card">
+        
+        <!-- Link Formspree here exactly like previous turns -->
+        <form action="https://formspree.io" method="POST">
+            
+            <!-- SECTION 1: ENTITY DEFINITION -->
+            <div class="section-title">1. Corporate Profile</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="company">Enterprise Entity Name</label>
+                    <input type="text" id="company" name="company_name" required placeholder="Acme Technologies Pvt Ltd">
+                </div>
+                <div class="form-group">
+                    <label for="signatory">Authorized Engineering Lead</label>
+                    <input type="text" id="signatory" name="lead_engineer" required placeholder="Principal Architect / CTO">
+                </div>
+                <div class="form-group full-width">
+                    <label for="email">Secure Communication Email</label>
+                    <input type="email" id="email" name="corporate_email" required placeholder="architecture@domain.in">
+                </div>
+            </div>
+
+            <!-- SECTION 2: ARCHITECTURE PARAMETERS -->
+            <div class="section-title">2. System Dependencies & Vector Inputs</div>
+            
+            <div class="form-group">
+                <label>Target Infrastructure Ecosystem <span>(Select all applicable)</span></label>
+                <div class="checkbox-group">
+                    <label class="checkbox-label"><input type="checkbox" name="infra_gcp" value="GCP"> Google Cloud (Cloud Run)</label>
+                    <label class="checkbox-label"><input type="checkbox" name="infra_aws" value="AWS"> Amazon Web Services</label>
+                    <label class="checkbox-label"><input type="checkbox" name="infra_hybrid" value="Hybrid"> Dedicated Edge / Private</label>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="stream_type">Primary Data/Telemetry Vector</label>
+                    <select id="stream_type" name="telemetry_type">
+                        <option value="nmea_gps">Geospatial Telemetry (GPS / NMEA Sentence Data)</option>
+                        <option value="ai_alignment">AI Alignment & LLM Prompt Auditing Pipelines</option>
+                        <option value="wms_erp">Warehouse Operations / Real-Time Anomaly Streams</option>
+                        <option value="custom_fullstack">High-Throughput Custom Web Architectures</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="concurrency">Expected Execution Throughput</label>
+                    <select id="concurrency" name="peak_concurrency">
+                        <option value="low">&lt; 1,000 requests / minute</option>
+                        <option value="mid">1,000 – 50,000 requests / minute</option>
+                        <option value="enterprise_high">50,000+ real-time concurrent events</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- SECTION 3: STATEMENT OF WORK SCOPING -->
+            <div class="section-title">3. Execution Parameters</div>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="budget_allocation">Allocated Engineering Capital (INR)</label>
+                    <select id="budget_allocation" name="sprint_budget_tier" required>
+                        <option value="sprint">₹1,80,000 – ₹3,50,000 (Target Architecture Sprint)</option>
+                        <option value="deployment">₹3,50,000 – ₹8,00,000 (Complete System Staging)</option>
+                        <option value="enterprise">Above ₹8,00,000 (Enterprise Custom Pipeline)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="timeline">Target Deployment Window</label>
+                    <select id="timeline" name="target_timeline">
+                        <option value="rapid">Urgent Sprint (< 30 Days)</option>
+                        <option value="standard">Standard Phase (30 - 90 Days)</option>
+                        <option value="long_term">Strategic Scaling Retainer</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group full-width" style="margin-top: 0.5rem;">
+                <label for="specifications">Technical System Constraints <span>(List your core databases, security policies, or endpoints)</span></label>
