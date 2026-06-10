@@ -29,1124 +29,408 @@
             display: block;
             position: fixed;
             top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
             z-index: 99999;
             background-size: 100% 4px, 6px 100%;
             pointer-events: none;
-            opacity: 0.85;
-            animation: crt-flicker 0.15s infinite;
         }
 
-        @keyframes crt-flicker {
-            0% { opacity: 0.84; }
-            50% { opacity: 0.86; }
-            100% { opacity: 0.85; }
-        }
-
-        /* Loading / Initialization Screen */
         #loading-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, #001200 0%, #000 100%);
+            background: radial-gradient(circle at center, #001a00 0%, #000 100%);
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             z-index: 9999; color: var(--neon-green); transition: opacity 0.8s;
-            border: 4px solid var(--neon-green); box-sizing: border-box;
         }
+        .glitch { font-family: 'Orbitron', sans-serif; font-size: clamp(2rem, 8vw, 4rem); letter-spacing: 15px; text-shadow: 2px 0 #f00, -2px 0 #00f; animation: glitch 1s infinite; text-align: center; }
+        @keyframes glitch { 0% { transform: translate(0); } 20% { transform: translate(-2px, 2px); } 40% { transform: translate(-2px, -2px); } 60% { transform: translate(2px, 2px); } 80% { transform: translate(2px, -2px); } 100% { transform: translate(0); } }
         
-        .glitch { 
-            font-family: 'Orbitron', sans-serif; 
-            font-size: clamp(2rem, 8vw, 4.5rem); 
-            letter-spacing: 15px; 
-            text-shadow: 3px 0 var(--neon-red), -3px 0 #0000ff; 
-            animation: glitch 1.2s infinite; 
-            text-align: center; 
-            font-weight: 900;
-        }
-        @keyframes glitch { 
-            0% { transform: translate(0); } 
-            20% { transform: translate(-2px, 2px); } 
-            40% { transform: translate(-2px, -2px); } 
-            60% { transform: translate(2px, 2px); } 
-            80% { transform: translate(2px, -2px); } 
-            100% { transform: translate(0); } 
-        }
+        .badge { margin-top: 15px; padding: 8px 30px; border: 1px solid var(--neon-green); background: rgba(0, 255, 102, 0.1); font-size: 14px; letter-spacing: 3px; text-transform: uppercase; color: #fff; }
+        .btn { background: transparent; color: var(--neon-green); border: 1px solid var(--neon-green); padding: 15px 40px; cursor: pointer; font-family: inherit; font-size: 1rem; letter-spacing: 5px; transition: 0.4s; margin-top: 40px; text-transform: uppercase; }
+        .btn:hover { background: var(--neon-green); color: #000; box-shadow: 0 0 40px var(--neon-green); }
         
-        .profession-badge {
-            margin-top: 15px; padding: 10px 35px; border: 2px solid var(--neon-green);
-            background: rgba(0, 255, 102, 0.1); font-size: 16px; letter-spacing: 4px;
-            text-transform: uppercase; color: #fff; font-weight: bold;
-            box-shadow: 0 0 15px rgba(0, 255, 102, 0.2);
-        }
+        #hud { position: absolute; bottom: 30px; left: 30px; color: var(--neon-green); background: var(--terminal-bg); padding: 20px; border-left: 4px solid var(--neon-green); pointer-events: none; line-height: 1.6; z-index: 50; font-size: 12px; border-radius: 0 4px 4px 0; border-top: 1px solid rgba(0,255,102,0.1); }
+        .ticker-wrap { position: absolute; top: 0; width: 100%; overflow: hidden; background: rgba(255, 51, 51, 0.1); border-bottom: 1px solid var(--neon-red); z-index: 100; height: 30px; line-height: 30px; pointer-events: none; }
+        .ticker { display: inline-block; white-space: nowrap; animation: ticker 40s linear infinite; color: var(--neon-red); font-weight: bold; font-size: 12px; letter-spacing: 1px; }
+        @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-        .btn { 
-            background: transparent; 
-            color: var(--neon-green); 
-            border: 1px solid var(--neon-green); 
-            padding: 15px 40px; 
-            cursor: pointer; 
-            font-family: inherit; 
-            font-size: 1.1rem; 
-            letter-spacing: 5px; 
-            transition: 0.5s; 
-            margin-top: 40px; 
-            text-transform: uppercase; 
-            box-shadow: 0 0 10px rgba(0, 255, 102, 0.1);
-        }
-        .btn:hover { 
-            background: var(--neon-green); 
-            color: #000; 
-            box-shadow: 0 0 40px var(--neon-green); 
-        }
-        
-        /* Glassmorphic Tactical HUD Styling */
-        #hud { 
-            position: absolute; bottom: 30px; left: 30px; 
-            color: var(--neon-green); 
-            background: var(--terminal-bg); 
-            padding: 20px; 
-            border: 1px solid var(--neon-green);
-            border-left: 5px solid var(--neon-green); 
-            pointer-events: none; 
-            line-height: 1.6; 
-            z-index: 50; 
-            font-size: 12px; 
-            border-radius: 0 8px 8px 0; 
-            box-shadow: 0 0 20px rgba(0, 255, 102, 0.15);
-        }
-        
-        /* Dynamic Scrolling Terminal Log */
-        #terminal-logs {
-            position: absolute; bottom: 30px; right: 30px;
-            width: 360px; height: 175px;
-            background: var(--terminal-bg);
-            border: 1px solid var(--neon-green);
-            border-bottom: 5px solid var(--neon-green);
-            border-radius: 8px 8px 0 0;
-            z-index: 50; padding: 15px;
-            box-shadow: 0 0 20px rgba(0, 255, 102, 0.15);
-            display: flex; flex-direction: column;
-        }
-        .terminal-header {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 11px; letter-spacing: 2px;
-            border-bottom: 1px solid rgba(0, 255, 102, 0.3);
-            padding-bottom: 5px; margin-bottom: 10px;
-            display: flex; justify-content: space-between;
-        }
-        #terminal-logs-content {
-            flex-grow: 1; overflow-y: auto; font-size: 11px; line-height: 1.4;
-            scrollbar-width: thin; scrollbar-color: var(--neon-green) transparent;
-        }
-        .log-line { margin-bottom: 4px; word-break: break-all; }
-        .log-sys { color: var(--neon-cyan); }
-        .log-warn { color: var(--neon-red); text-shadow: 0 0 5px var(--neon-red); }
-        .log-info { color: var(--neon-green); }
+        #controls { position: absolute; top: 50px; left: 30px; z-index: 100; display: flex; gap: 10px; }
+        .control-btn { background: rgba(0, 255, 102, 0.05); color: var(--neon-green); border: 1px solid var(--neon-green); padding: 10px 20px; cursor: pointer; font-family: inherit; font-weight: bold; letter-spacing: 1px; transition: 0.3s; text-transform: uppercase; font-size: 11px; }
+        .alert-btn { border-color: var(--neon-red); color: var(--neon-red); }
+        .alert-btn:hover { background: var(--neon-red); color: #fff; }
 
-        /* Tactical 2D Radar / Minimap Overlay */
-        #radar-container {
-            position: absolute; top: 60px; left: 30px;
-            width: 140px; height: 140px;
-            border: 2px solid var(--neon-green);
-            border-radius: 50%;
-            background: rgba(0, 8, 0, 0.85);
-            z-index: 100;
-            box-shadow: 0 0 15px rgba(0, 255, 102, 0.2);
+        #info-panel { position: absolute; top: 150px; left: 30px; width: 300px; color: var(--neon-green); background: rgba(0, 10, 0, 0.95); border: 1px solid var(--neon-green); padding: 20px; display: none; z-index: 40; border-radius: 0 0 15px 0; border-left: 4px solid var(--neon-green); pointer-events: none; }
+        #resume-hint { position: absolute; top: 50%; left: 35%; transform: translate(-50%, -50%); color: var(--neon-green); background: rgba(0,0,0,0.85); padding: 15px 30px; border: 1px solid var(--neon-green); font-size: 12px; letter-spacing: 2px; display: none; pointer-events: none; border-radius: 4px; box-shadow: 0 0 30px rgba(0, 255, 102, 0.2); }
+
+        /* ==================== 🧠 GEOSENSE GEMINI AI TERMINAL STYLE ==================== */
+        #ai-terminal {
+            position: absolute;
+            top: 50px; right: 30px;
+            width: 380px;
+            height: calc(100% - 100px);
+            background: rgba(0, 8, 0, 0.92);
+            border: 1px solid var(--neon-green);
+            box-shadow: 0 0 35px rgba(0, 255, 102, 0.15);
+            border-radius: 8px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
+            transition: width 0.3s, opacity 0.3s;
         }
-        #radar-sweep {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: conic-gradient(from 0deg, rgba(0, 255, 102, 0.35) 0deg, rgba(0, 255, 102, 0) 180deg);
-            border-radius: 50%;
-            animation: sweep 2.8s linear infinite;
-            transform-origin: center;
-            pointer-events: none;
+        .term-header {
+            background: rgba(0, 255, 102, 0.1);
+            border-bottom: 1px solid var(--neon-green);
+            padding: 12px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        @keyframes sweep {
-            100% { transform: rotate(360deg); }
-        }
-        .radar-blip {
-            position: absolute; width: 5px; height: 5px; border-radius: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 6px currentColor;
-        }
-        .radar-ping {
-            animation: radar-pulse 1s infinite alternate;
-        }
-        @keyframes radar-pulse {
-            0% { opacity: 0.3; }
-            100% { opacity: 1; }
-        }
-
-        .ticker-wrap { 
-            position: absolute; top: 0; width: 100%; overflow: hidden; 
-            background: rgba(255, 51, 51, 0.08); border-bottom: 2px solid var(--neon-red); 
-            z-index: 100; height: 35px; line-height: 35px; pointer-events: none; 
-        }
-        .ticker { 
-            display: inline-block; white-space: nowrap; padding-right: 100%; 
-            animation: ticker 32s linear infinite; color: var(--neon-red); 
-            font-weight: bold; letter-spacing: 2px; font-size: 12px;
-        }
-        @keyframes ticker { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
-
-        #decrypt-zone { position: absolute; top: 60px; right: 30px; z-index: 100; display: flex; flex-direction: column; gap: 10px; }
-        .audio-btn, .decrypt-btn { 
-            background: rgba(0, 255, 102, 0.05); color: var(--neon-green); border: 1px solid var(--neon-green); 
-            padding: 12px 25px; cursor: pointer; font-family: inherit; font-weight: bold; letter-spacing: 2px; 
-            transition: 0.3s; text-transform: uppercase; font-size: 11px; 
-            box-shadow: 0 0 10px rgba(0, 255, 102, 0.1);
-        }
-        .decrypt-btn { border-color: var(--neon-red); color: var(--neon-red); }
-        .decrypt-btn:hover { background: var(--neon-red); color: #fff; box-shadow: 0 0 20px var(--neon-red); }
-        .audio-btn:hover { background: var(--neon-green); color: #000; box-shadow: 0 0 20px var(--neon-green); }
-
-        #info-panel { 
-            position: absolute; top: 160px; right: 30px; width: 340px; 
-            color: var(--neon-green); background: rgba(0, 15, 0, 0.95); border: 1px solid var(--neon-green); 
-            padding: 25px; display: none; z-index: 40; border-radius: 0 0 0 20px; 
-            border-right: 5px solid var(--neon-green); box-shadow: -10px 10px 40px rgba(0,0,0,0.8); 
-            pointer-events: none; 
-        }
-        #info-title { margin: 0; font-family: 'Orbitron', sans-serif; font-size: 18px; border-bottom: 1px solid rgba(0,255,102,0.3); padding-bottom: 10px; margin-bottom: 15px; }
-        
-        #crosshair { 
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            width: 32px; height: 32px; border: 1px solid rgba(0, 255, 102, 0.4); 
-            border-radius: 50%; pointer-events: none; z-index: 1000; 
-            transition: 0.2s ease-out;
-        }
-        #crosshair::before, #crosshair::after {
-            content: ''; position: absolute; background: var(--neon-green); opacity: 0.6;
-        }
-        #crosshair::before { top: 50%; left: -6px; width: 4px; height: 1px; transform: translateY(-50%); }
-        #crosshair::after { top: -6px; left: 50%; width: 1px; height: 4px; transform: translateX(-50%); }
-
-        #resume-hint { 
-            position: absolute; top: 62%; left: 50%; transform: translate(-50%, -50%); 
-            color: var(--neon-green); background: rgba(0,0,0,0.85); padding: 12px 25px; 
-            border: 1px solid var(--neon-green); font-size: 12px; letter-spacing: 3px; 
-            display: none; pointer-events: none; box-shadow: 0 0 15px rgba(0, 255, 102, 0.2);
-        }
-
-        /* Operator Dossier UI Overlay */
-        #dossier-screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 8, 0, 0.97); z-index: 99998;
-            display: none; flex-direction: column; justify-content: center; align-items: center;
-            color: var(--neon-green); font-family: 'Share Tech Mono', monospace;
-            border: 4px solid var(--neon-cyan); box-sizing: border-box;
-            overflow-y: auto; padding: 20px;
-        }
-        .dossier-container {
-            width: 95%; max-width: 850px;
-            background: rgba(0, 15, 0, 0.95);
-            border: 2px solid var(--neon-cyan);
-            padding: 30px;
-            box-shadow: 0 0 35px rgba(0, 255, 204, 0.2);
-            border-radius: 8px;
-            box-sizing: border-box;
-        }
-        .dossier-header {
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 2px solid var(--neon-cyan);
-            padding-bottom: 15px; margin-bottom: 20px;
-        }
-        .dossier-title {
+        .term-title {
+            color: #fff;
             font-family: 'Orbitron', sans-serif;
-            font-size: clamp(16px, 4vw, 24px); color: var(--neon-cyan);
-            letter-spacing: 3px; text-shadow: 0 0 10px rgba(0, 255, 204, 0.4);
+            font-size: 13px;
             font-weight: bold;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .dossier-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
-            text-align: left;
+        .pulse-dot {
+            width: 8px; height: 8px;
+            background-color: var(--neon-green);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--neon-green);
+            animation: blink 1.5s infinite;
         }
-        @media (max-width: 768px) {
-            .dossier-grid { grid-template-columns: 1fr; }
+        .term-body {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--neon-green) transparent;
         }
-        .dossier-section {
-            border: 1px solid rgba(0, 255, 204, 0.3);
-            background: rgba(0, 255, 204, 0.02);
-            padding: 15px; border-radius: 5px; margin-bottom: 15px;
+        .chat-msg {
+            font-size: 13px;
+            line-height: 1.5;
+            padding: 8px 12px;
+            border-radius: 4px;
+            max-width: 85%;
+            word-wrap: break-word;
         }
-        .dossier-section-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 13px; font-weight: bold; letter-spacing: 2px;
-            color: #fff; border-bottom: 1px solid rgba(0, 255, 204, 0.2);
-            padding-bottom: 5px; margin-bottom: 10px;
-            text-transform: uppercase;
+        .chat-msg.system {
+            background: rgba(0, 255, 102, 0.05);
+            border-left: 2px solid var(--neon-green);
+            color: #d1ffd1;
+            align-self: flex-start;
         }
-        .dossier-item {
-            margin-bottom: 8px; font-size: 12px; line-height: 1.5;
+        .chat-msg.user {
+            background: rgba(0, 255, 102, 0.2);
+            border-right: 2px solid var(--neon-cyan);
+            color: #fff;
+            align-self: flex-end;
+            text-align: right;
         }
-        .dossier-label { color: var(--neon-cyan); font-weight: bold; }
-        .badge-list span {
-            display: inline-block; padding: 3px 8px; font-size: 10px;
-            border: 1px solid var(--neon-green); margin: 3px;
-            background: rgba(0, 255, 102, 0.05); color: #fff;
-            border-radius: 3px;
+        .term-footer {
+            border-top: 1px solid rgba(0, 255, 102, 0.2);
+            padding: 12px;
+            display: flex;
+            gap: 8px;
+            background: rgba(0, 4, 0, 0.8);
         }
-
-        /* Hacking Minigame UI Overlay */
-        #hacking-screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 6, 0, 0.96); z-index: 99999;
-            display: none; flex-direction: column; justify-content: center; align-items: center;
-            color: var(--neon-green); font-family: 'Share Tech Mono', monospace;
-            border: 4px solid var(--neon-red); box-sizing: border-box;
-        }
-        .hacking-container {
-            width: 90%; max-width: 600px;
-            background: rgba(0, 12, 0, 0.95);
-            border: 2px solid var(--neon-green);
-            padding: 30px;
-            box-shadow: 0 0 30px rgba(0, 255, 102, 0.15);
-            text-align: center;
-            border-radius: 8px;
-        }
-        .hack-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 24px; color: var(--neon-red);
-            letter-spacing: 5px; margin-bottom: 20px;
-            text-shadow: 0 0 10px var(--neon-red);
-            animation: pulse-red 1.5s infinite alternate;
-        }
-        @keyframes pulse-red {
-            0% { opacity: 0.7; }
-            100% { opacity: 1; }
-        }
-        .hack-instruction {
-            font-size: 14px; margin-bottom: 25px; color: #fff;
-            letter-spacing: 2px; line-height: 1.5;
-        }
-        .buffer-box {
-            display: inline-block; font-size: 20px; font-weight: bold;
-            padding: 10px 30px; border: 2px dashed var(--neon-cyan);
-            background: rgba(0, 255, 204, 0.05); color: var(--neon-cyan);
-            letter-spacing: 5px; margin-bottom: 25px;
+        .term-input {
+            flex-grow: 1;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(0, 255, 102, 0.4);
+            color: #fff;
+            padding: 10px;
+            font-family: inherit;
+            font-size: 13px;
             border-radius: 4px;
         }
-        .hex-grid {
-            display: grid; grid-template-columns: repeat(8, 1fr);
-            gap: 10px; margin-bottom: 25px;
+        .term-input:focus {
+            outline: none;
+            border-color: var(--neon-green);
+            box-shadow: 0 0 10px rgba(0, 255, 102, 0.2);
         }
-        .hex-node {
-            height: 42px; border: 1px solid var(--neon-green);
-            display: flex; justify-content: center; align-items: center;
-            cursor: pointer; font-weight: bold; font-size: 15px;
-            transition: all 0.2s; background: rgba(0, 255, 102, 0.03);
-            border-radius: 3px;
+        .term-send {
+            background: var(--neon-green);
+            color: #000;
+            border: none;
+            padding: 0 15px;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 4px;
+            font-family: inherit;
+            transition: 0.2s;
         }
-        .hex-node:hover {
-            background: var(--neon-green); color: #000;
+        .term-send:hover {
             box-shadow: 0 0 15px var(--neon-green);
-        }
-        .hex-node.selected {
-            background: var(--neon-cyan); border-color: var(--neon-cyan);
-            color: #000; box-shadow: 0 0 15px var(--neon-cyan);
-        }
-        .hex-node.disabled {
-            opacity: 0.2; pointer-events: none; border-color: #222;
-        }
-        .hack-status {
-            font-size: 13px; font-weight: bold; letter-spacing: 3px;
-            margin-top: 15px; height: 20px;
         }
     </style>
 </head>
 <body>
 
-    <audio id="bg-music" loop>
-        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3" type="audio/mpeg">
-    </audio>
+    <audio id="bg-music" loop><source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3" type="audio/mpeg"></audio>
 
-    <div class="ticker-wrap">
-        <div class="ticker">
-            SYSTEM ANOMALY: RUWAIS OFFSHORE 250KM trajectory jump detected ... ACTIVE CASE #250-KM: SPOOFING VECTOR CONFIRMED ... SIGNAL INTEGRITY COMPROMISED ... DECRYPTION UNIT STANDBY...
-        </div>
-    </div>
+    <div class="ticker-wrap"><div class="ticker">GEOSENSE INTELLIGENCE CORE v12.0 ACTIVE // ANALYZING CASE #250-KM: RUWAIS SPOOFING ANOMALY // SECURE LAB RUNNING ON CRT SHELL...</div></div>
 
-    <!-- Loading screen -->
     <div id="loading-screen">
         <div class="glitch">GEOSENSE</div>
-        <p>SECURE PORTAL INITIALIZATION: <span style="color:#fff; font-weight:bold;">OPERATOR ALPHA</span></p>
-        <div class="profession-badge">Geospatial Forensic Intelligence Simulator</div>
-        <button class="btn" onclick="startApp()">BOOT MAINFRAME</button>
+        <p>CRT INTERACTIVE MODE AUTHORIZED FOR: <span style="color:#fff; font-weight:bold;">NIKHIL KRISHNAN [NK]</span></p>
+        <div class="badge">Forensic Laboratory Shell</div>
+        <button class="btn" onclick="startApp()">Enter Investigation Lab</button>
     </div>
 
-    <!-- Operator Dossier Clearance Card Screen -->
-    <div id="dossier-screen">
-        <div class="dossier-container">
-            <div class="dossier-header">
-                <div class="dossier-title">[CLASSIFIED DOSSIER] CODENAME: ALPHA</div>
-                <button class="btn" style="margin-top:0; padding:8px 20px; font-size:12px; border-color:var(--neon-cyan); color:var(--neon-cyan);" onclick="toggleDossier(event)">CLOSE SYSTEM</button>
+    <!-- ==================== 🧠 GEOSENSE GEMINI AI TERMINAL WINDOW ==================== -->
+    <div id="ai-terminal" onclick="unlockPointerForChat()">
+        <div class="term-header">
+            <div class="term-title">
+                <div class="pulse-dot"></div>
+                GEOSENSE GEMINI CO-PILOT v2.5
             </div>
-            
-            <div style="text-align: left; margin-bottom: 20px;">
-                <h2 style="font-family: 'Orbitron', sans-serif; font-size: 22px; margin: 0; color: #fff; text-shadow: 0 0 10px rgba(0, 255, 204, 0.2);">NIKHIL KRISHNAN</h2>
-                <div style="font-size: 13px; color: var(--neon-cyan); font-weight: bold; margin-top: 5px; letter-spacing: 2px;">AI Content & Evaluation Specialist | Data Analyst</div>
-                <p style="font-size: 13px; line-height: 1.5; color: #b0b0b0; margin-top: 10px;">
-                    Highly analytical AI Content & Evaluation Specialist with a 100% English Proficiency score and verified expertise in LLM training. Certified by Google Cloud (Vertex AI) and DeepLearning.AI in advanced Prompt Engineering. Combines a technical background in Data Analysis with operational inventory systems to provide high-accuracy auditing for complex logistical and operational AI models. Remote Ready.
-                </p>
+            <span style="font-size: 10px; opacity: 0.6; color: var(--neon-green)">SECURE NODE</span>
+        </div>
+        <div class="term-body" id="chat-history">
+            <div class="chat-msg system">
+                > System initialized successfully inside CRT shell.<br>
+                > Welcome back, <strong>Lead Expert NK</strong>. <br>
+                > Ready to trace coordinate jumps or check Termux telemetry data. Ask me anything!
             </div>
-
-            <div class="dossier-grid">
-                <!-- Left Side: contact and certifications -->
-                <div>
-                    <div class="dossier-section">
-                        <div class="dossier-section-title">COMMUNICATION CODES</div>
-                        <div class="dossier-item"><span class="dossier-label">Location:</span> Chengannur, Kerala, India (Remote Ready)</div>
-                        <div class="dossier-item"><span class="dossier-label">Email:</span> nikhilkr51@gmail.com</div>
-                        <div class="dossier-item"><span class="dossier-label">Secure Line:</span> +91-9048871505</div>
-                        <div class="dossier-item"><span class="dossier-label">Developer Profile:</span> Google Developers Profile</div>
-                    </div>
-
-                    <div class="dossier-section">
-                        <div class="dossier-section-title">VERIFIED CREDENTIALS</div>
-                        <div class="badge-list" style="margin-top: 5px;">
-                            <span>Vertex AI Prompt Design (Google Cloud, April 2026)</span>
-                            <span>Gemini Enterprise Agent Ready (Google Cloud, April 2026)</span>
-                            <span>ChatGPT Prompt Engineering (DeepLearning.AI, 2026)</span>
-                            <span>Diploma in Warehouse Management (Alison, Distinction)</span>
-                            <span>Google Cloud Innovator & Developer Program</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Side: experience and competencies -->
-                <div>
-                    <div class="dossier-section">
-                        <div class="dossier-section-title">OPERATIONAL LOGISTICS</div>
-                        <div class="dossier-item" style="font-weight: bold; color: #fff;">AI Content & Evaluation Specialist (April 2026 – Present)</div>
-                        <div class="dossier-item" style="padding-left: 10px; opacity:0.85;">• Utilized Vertex AI Studio to deploy and test generative AI models.</div>
-                        <div class="dossier-item" style="padding-left: 10px; opacity:0.85;">• Applied DeepLearning.AI principles for logical consistency auditing.</div>
-                        <div class="dossier-item" style="padding-left: 10px; opacity:0.85;">• Maintained a 100% accuracy standard in linguistic and operational datasets.</div>
-                        
-                        <div class="dossier-item" style="font-weight: bold; color: #fff; margin-top: 10px;">Data Analyst & Logistics Coordinator</div>
-                        <div class="dossier-item" style="padding-left: 10px; opacity:0.85;">• Managed data entry and inventory logic using SQL Server and WMS.</div>
-                        <div class="dossier-item" style="padding-left: 10px; opacity:0.85;">• Audited supply chain datasets to identify spatiotemporal & stock anomalies.</div>
-                    </div>
-
-                    <div class="dossier-section">
-                        <div class="dossier-section-title">CORE SKILL MATRIX</div>
-                        <div class="dossier-item"><span class="dossier-label">AI Alignment:</span> RLHF, Fact-Checking, Hallucination Detection</div>
-                        <div class="dossier-item"><span class="dossier-label">Prompting Tech:</span> Zero/Few-shot, Chain-of-Thought, Injection Testing</div>
-                        <div class="dossier-item"><span class="dossier-label">Stack Matrix:</span> Google Cloud Console, Vertex AI, SQL, Python</div>
-                    </div>
-                </div>
-            </div>
+        </div>
+        <div class="term-footer">
+            <input type="text" class="term-input" id="chat-input" placeholder="Type forensic command or message..." onkeydown="handleChatKey(event)">
+            <button class="term-send" onclick="sendChatMessage()">SEND</button>
         </div>
     </div>
 
-    <!-- Active Decryption Minigame Screen -->
-    <div id="hacking-screen">
-        <div class="hacking-container">
-            <div class="hack-title">CYBER INTERFERER OVERRIDE</div>
-            <div class="hack-instruction">
-                BUFFER DISCREPANCY DETECTED. SELECT THE TARGET OVERRIDE CHIP SEQUENCE IN SEQUENCE TO NEUTRALIZE THE TELEMETRY DRIFT.
-            </div>
-            <div style="font-size:12px; margin-bottom: 5px; opacity:0.8;">TARGET SEQUENCE:</div>
-            <div class="buffer-box" id="target-sequence-display">8B CC E9</div>
-            
-            <div class="hex-grid" id="hex-board">
-                <!-- Dynamically generated hex grid -->
-            </div>
-            
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 15px;">
-                <div id="hack-timer" style="font-size:16px; font-weight:bold; color:var(--neon-red); letter-spacing:2px;">TIME: 20.0s</div>
-                <button class="btn" style="margin-top:0; padding:8px 20px; font-size:12px;" onclick="cancelHacking()">ABANDON SYSTEM</button>
-            </div>
-            <div class="hack-status" id="hack-status-message">INITIALIZING CHIP CONNECTIONS...</div>
-        </div>
+    <div id="info-panel"><h3 id="info-title" style="margin:0; font-family:'Orbitron'; font-size:16px;">DATA NODE</h3><p id="info-desc" style="font-size:13px; color:#aaa; margin-top:10px;"></p></div>
+
+    <div id="controls">
+        <button class="control-btn" onclick="toggleAudio(event)">AUDIO: OFF</button>
+        <button class="control-btn alert-btn" onclick="runDecryption(event)">Neutralize Threat</button>
     </div>
 
-    <!-- Map Info Overlay -->
-    <div id="info-panel">
-        <h3 id="info-title">DATA NODE</h3>
-        <p id="info-desc" style="font-size: 14px; line-height: 1.6; color: #b0b0b0;"></p>
-    </div>
-
-    <!-- Tactical HUD Controls -->
-    <div id="decrypt-zone">
-        <button id="audio-toggle" class="audio-btn" onclick="toggleAudio(event)">AUDIO: OFF</button>
-        <button id="dossier-toggle" class="audio-btn" onclick="toggleDossier(event)" style="border-color:var(--neon-cyan); color:var(--neon-cyan);">Operator Dossier</button>
-        <button id="decrypt-trigger" class="decrypt-btn" onclick="triggerHackingMinigame(event)">Neutralize Anomaly</button>
-    </div>
-
-    <!-- Circular Tactical Radar Map -->
-    <div id="radar-container">
-        <div id="radar-sweep"></div>
-        <div id="radar-map" style="position:absolute; width:100%; height:100%;"></div>
-    </div>
-
-    <div id="crosshair"></div>
-    <div id="resume-hint">CLICK SCREEN TO ENGAGE TERMINAL</div>
+    <div id="resume-hint">CLICK ON 3D WORLD GRID TO RESUME SCANNING</div>
     
-    <!-- Left Hand Diagnostics HUD -->
     <div id="hud">
-        <span style="opacity: 0.5; font-size: 10px;">OPERATOR:</span> <span style="color:#fff">ALPHA SIGNING ON</span><br>
-        <span style="opacity: 0.5; font-size: 10px;">ROLE:</span> <span style="color:var(--neon-green)">FORENSIC INTELLIGENCE EXPERT</span><br>
-        <span style="opacity: 0.5; font-size: 10px;">GEOLOCK:</span> <span id="telemetry-coords" style="color:#fff">24.453900° N, 54.377300° E</span><br>
-        <span style="opacity: 0.5; font-size: 10px;">VELOCITY:</span> <span id="telemetry-speed" style="color:var(--neon-cyan)">0.0 km/h</span><br>
-        <span style="opacity: 0.5; font-size: 10px;">CORE ENGINE:</span> <span id="status-text" style="color:var(--neon-red); text-shadow:0 0 4px var(--neon-red)">JAMMING VECTORS DETECTED</span><br>
-        ------------------------------------------<br>
-        [W,A,S,D] NAVIGATION | [MOUSE] AIM / LOOK
-    </div>
-
-    <!-- Right Hand System Log HUD -->
-    <div id="terminal-logs">
-        <div class="terminal-header">
-            <span>SYSTEM CONSOLE LOG</span>
-            <span id="log-cursor" style="font-weight:bold; animation: pulse-red 0.8s infiniteAlternate;">█</span>
-        </div>
-        <div id="terminal-logs-content">
-            <!-- Dynamically populated logs -->
-        </div>
+        <span style="opacity:0.6">OPERATOR:</span> <span style="color:#fff">NIKHIL KRISHNAN [NK]</span><br>
+        <span style="opacity:0.6">MODE:</span> <span style="color:var(--neon-green)">CRT MONITOR EMULATOR</span><br>
+        <span style="opacity:0.6">STATUS:</span> <span id="status-text" style="color:var(--neon-red)">SCANNING ANOMALIES</span><br>
+        ----------------------------------<br>
+        W,A,S,D: NAVIGATE | MOUSE: SCAN
     </div>
 
     <script>
-        // --- DYNAMIC AUDIO SYNTHESIS UTILITY (Web Audio API) ---
-        const AudioSynth = {
-            ctx: null,
-            humOsc1: null,
-            humOsc2: null,
-            humGain: null,
-            
-            init() {
-                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-                if (AudioContextClass) {
-                    this.ctx = new AudioContextClass();
-                }
-            },
-            
-            startHum() {
-                try {
-                    if (!this.ctx) this.init();
-                    if (!this.ctx) return;
-                    if (this.ctx.state === 'suspended') this.ctx.resume();
-                    if (this.humOsc1) return;
-                    
-                    this.humOsc1 = this.ctx.createOscillator();
-                    this.humOsc2 = this.ctx.createOscillator();
-                    this.humGain = this.ctx.createGain();
-                    
-                    this.humOsc1.type = 'sine';
-                    this.humOsc1.frequency.setValueAtTime(55, this.ctx.currentTime); // A1 note
-                    
-                    this.humOsc2.type = 'triangle';
-                    this.humOsc2.frequency.setValueAtTime(110, this.ctx.currentTime); // A2 octave hum
-                    
-                    this.humGain.gain.setValueAtTime(0.04, this.ctx.currentTime);
-                    
-                    this.humOsc1.connect(this.humGain);
-                    this.humOsc2.connect(this.humGain);
-                    this.humGain.connect(this.ctx.destination);
-                    
-                    this.humOsc1.start();
-                    this.humOsc2.start();
-                } catch(e) {
-                    console.error("Audio Hum Error", e);
-                }
-            },
-            
-            stopHum() {
-                if (this.humOsc1) {
-                    try {
-                        this.humOsc1.stop();
-                        this.humOsc2.stop();
-                    } catch(e) {}
-                    this.humOsc1 = null;
-                    this.humOsc2 = null;
-                }
-            },
-            
-            playBeep(freq = 800, duration = 0.08, type = 'sine') {
-                try {
-                    if (!this.ctx) this.init();
-                    if (!this.ctx) return;
-                    if (this.ctx.state === 'suspended') this.ctx.resume();
-                    
-                    const osc = this.ctx.createOscillator();
-                    const gainNode = this.ctx.createGain();
-                    
-                    osc.type = type;
-                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-                    
-                    gainNode.gain.setValueAtTime(0.08, this.ctx.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
-                    
-                    osc.connect(gainNode);
-                    gainNode.connect(this.ctx.destination);
-                    
-                    osc.start();
-                    osc.stop(this.ctx.currentTime + duration);
-                } catch(e) {}
-            },
-            
-            playSweep(startFreq, endFreq, duration, type = 'sawtooth') {
-                try {
-                    if (!this.ctx) this.init();
-                    if (!this.ctx) return;
-                    if (this.ctx.state === 'suspended') this.ctx.resume();
-                    
-                    const osc = this.ctx.createOscillator();
-                    const gainNode = this.ctx.createGain();
-                    
-                    osc.type = type;
-                    osc.frequency.setValueAtTime(startFreq, this.ctx.currentTime);
-                    osc.frequency.exponentialRampToValueAtTime(endFreq, this.ctx.currentTime + duration);
-                    
-                    gainNode.gain.setValueAtTime(0.07, this.ctx.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
-                    
-                    osc.connect(gainNode);
-                    gainNode.connect(this.ctx.destination);
-                    
-                    osc.start();
-                    osc.stop(this.ctx.currentTime + duration);
-                } catch(e) {}
-            },
-            
-            playSuccessChord() {
-                try {
-                    if (!this.ctx) this.init();
-                    if (!this.ctx) return;
-                    if (this.ctx.state === 'suspended') this.ctx.resume();
-                    
-                    const now = this.ctx.currentTime;
-                    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
-                    notes.forEach((freq, idx) => {
-                        const osc = this.ctx.createOscillator();
-                        const gain = this.ctx.createGain();
-                        osc.type = 'sine';
-                        osc.frequency.setValueAtTime(freq, now + idx * 0.1);
-                        gain.gain.setValueAtTime(0, now);
-                        gain.gain.setValueAtTime(0.08, now + idx * 0.1);
-                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.1 + 0.3);
-                        
-                        osc.connect(gain);
-                        gain.connect(this.ctx.destination);
-                        osc.start(now + idx * 0.1);
-                        osc.stop(now + idx * 0.1 + 0.35);
-                    });
-                } catch(e) {}
-            }
-        };
-
-        // --- CLI LOG CONSOLE SCROLL LOG ---
-        function addTerminalLog(msg, type = 'info') {
-            const logsDiv = document.getElementById('terminal-logs-content');
-            if (!logsDiv) return;
-            const line = document.createElement('div');
-            line.className = `log-line log-${type}`;
-            const time = new Date().toLocaleTimeString();
-            line.innerText = `[${time}] ${msg}`;
-            logsDiv.appendChild(line);
-            
-            while (logsDiv.children.length > 25) {
-                logsDiv.removeChild(logsDiv.firstChild);
-            }
-            const container = document.getElementById('terminal-logs');
-            container.scrollTop = container.scrollHeight;
-        }
-
-        // --- SCENE CONFIGURATION & THREE.JS ---
         let scene, camera, renderer, particles, mapTable, laser, holoProfile, vault;
-        let isDecrypted = false;
-        let isAudioPlaying = false;
-        let displays = [];
+        let isDecrypted = false, isAudioPlaying = false, displays = [];
         const keys = {};
 
         function init() {
             scene = new THREE.Scene();
-            scene.fog = new THREE.FogExp2(0x000000, 0.006);
-
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 3000);
+            scene.fog = new THREE.FogExp2(0x000000, 0.007);
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 2500);
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setPixelRatio(window.devicePixelRatio);
             document.body.appendChild(renderer.domElement);
 
-            scene.add(new THREE.AmbientLight(0xffffff, 2.5));
-            const pLight = new THREE.PointLight(0x00ff66, 8, 1000);
-            pLight.position.set(0, 150, 0);
-            scene.add(pLight);
+            scene.add(new THREE.AmbientLight(0xffffff, 2.0));
+            const pL = new THREE.PointLight(0x00ff66, 6, 800);
+            pL.position.set(0, 100, 0);
+            scene.add(pL);
+            scene.add(new THREE.GridHelper(4000, 100, 0x00ff66, 0x001100));
 
-            scene.add(new THREE.GridHelper(5000, 100, 0x00ff66, 0x001200));
-
-            // Floating dust code particles
-            const pGeo = new THREE.BufferGeometry();
-            const pCount = 20000;
-            const pPos = new Float32Array(pCount * 3);
-            for(let i=0; i<pCount*3; i++) pPos[i] = (Math.random() - 0.5) * 2000;
-            pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-            particles = new THREE.Points(pGeo, new THREE.PointsMaterial({ color: 0x00ff66, size: 0.15, transparent: true, opacity: 0.6 }));
+            const pG = new THREE.BufferGeometry();
+            const pC = 15000, pP = new Float32Array(pC*3);
+            for(let i=0; i<pC*3; i++) pP[i] = (Math.random()-0.5)*1800;
+            pG.setAttribute('position', new THREE.BufferAttribute(pP, 3));
+            particles = new THREE.Points(pG, new THREE.PointsMaterial({ color: 0x00ff66, size: 0.15, transparent: true, opacity: 0.5 }));
             scene.add(particles);
 
             const loader = new THREE.TextureLoader();
-            
-            // 1. IDENTITY HOLOGRAM
-            loader.load('hologram_new.png', function(tex) {
-                const geo = new THREE.CircleGeometry(25, 64);
-                holoProfile = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide, transparent: true, opacity: 0.95 }));
-                holoProfile.position.set(0, 45, -70);
+            loader.load('r6sb37yz31rg80cxzmyv2k3rm4_result_0.jpg', tex => {
+                holoProfile = new THREE.Mesh(new THREE.CircleGeometry(22, 64), new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: 0.9 }));
+                holoProfile.position.set(0, 40, -60);
                 scene.add(holoProfile);
-                
-                const ring = new THREE.Mesh(new THREE.TorusGeometry(25.5, 0.4, 16, 100), new THREE.MeshBasicMaterial({ color: 0x00ffcc }));
-                ring.position.set(0, 45, -70);
-                scene.add(ring);
-                
-                // Add operator dossier to proximity exhibits list!
-                displays.push({ mesh: holoProfile, title: "OPERATOR DOSSIER: NIKHIL KRISHNAN", desc: "Lead AI Specialist & Data Analyst. Certified in Vertex AI Prompt Design (Google Cloud) & DeepLearning.AI Prompt Engineering. Expert in LLM training and log auditing." });
+                const r = new THREE.Mesh(new THREE.TorusGeometry(22.5, 0.3, 16, 100), new THREE.MeshBasicMaterial({ color: 0x00ffcc }));
+                r.position.set(0, 40, -60);
+                scene.add(r);
             });
 
-            // 2. THE INVESTIGATION TABLE (Anomaly Node)
-            const tableGeo = new THREE.CylinderGeometry(40, 45, 4, 32);
-            mapTable = new THREE.Mesh(tableGeo, new THREE.MeshBasicMaterial({ color: 0x00ff66, wireframe: true, transparent: true, opacity: 0.4 }));
-            mapTable.position.set(0, 2, -160);
-            scene.add(mapTable);
-            
-            // Register table as a radar display target
-            displays.push({ mesh: mapTable, title: "SPOOFING RADAR SOURCE", desc: "Main physical terminal executing coordinate injection anomaly vectors." });
+            const vG = new THREE.BoxGeometry(35, 45, 6);
+            vault = new THREE.Mesh(vG, new THREE.MeshBasicMaterial({ color: 0xff3333, wireframe: true }));
+            vault.position.set(130, 20, -100);
+            scene.add(vault);
+            displays.push({ mesh: vault, title: "COURSERA CASE #06244620", desc: "Investigation into Financial Aid discrepancy. Modules locked despite 75% coverage. Possible backend logic error detected." });
 
-            laser = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 200, 8), new THREE.MeshBasicMaterial({ color: 0xff3333, transparent: true, opacity: 0.8 }));
-            laser.rotation.z = Math.PI / 3.4;
-            laser.position.set(0, 50, -160);
+            const tG = new THREE.CylinderGeometry(35, 38, 2, 32);
+            mapTable = new THREE.Mesh(tG, new THREE.MeshBasicMaterial({ color: 0x00ff66, wireframe: true, transparent: true, opacity: 0.3 }));
+            mapTable.position.set(0, 1, -140);
+            scene.add(mapTable);
+
+            laser = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 160, 8), new THREE.MeshBasicMaterial({ color: 0xff3333, transparent: true, opacity: 0.8 }));
+            laser.rotation.z = Math.PI/3.5; laser.position.set(0, 45, -140);
             scene.add(laser);
 
-            // 3. COURSERA CASE REPOSITORY
-            const vaultGeo = new THREE.BoxGeometry(40, 50, 8);
-            vault = new THREE.Mesh(vaultGeo, new THREE.MeshBasicMaterial({ color: 0xff3333, wireframe: true }));
-            vault.position.set(150, 25, -120);
-            scene.add(vault);
-            displays.push({ mesh: vault, title: "CASE: COURSERA DISCREPANCY", desc: "Investigation into Financial Aid Case #06244620. 75% coverage granted but modules locked. Status: Under Active Audit." });
+            createDisplay('Screenshot_20260407_150128_Maps.jpg', -80, -180, "SPOOFING ANOMALY", "250km instantaneous jump detected from Abu Dhabi to Ruwais Offshore.");
+            createDisplay('Screenshot_20260407_151951_GPS Test.jpg', 0, -210, "SIGNAL FAILURE LOG", "Recorded satellite fix loss during spoofing injection event.");
+            createDisplay('power_bi_real visual.jpg', 80, -180, "DATA ANALYTICS", "Trend clusters of coordinate manipulation derived from Power BI.");
 
-            // 4. EXHIBITS
-            createDisplay('Screenshot_20260407_150128_Maps.jpg', -100, -200, "SPOOFING ANOMALY", "Detected 250km jump from Abu Dhabi Residential Area to Ruwais Offshore Sector.");
-            createDisplay('Screenshot_20260407_151951_GPS Test.jpg', 0, -240, "GNSS DIAGNOSTICS", "Satellite fix loss recorded during coordinates injection.");
-            createDisplay('geosense-dashboard.jpg', 100, -200, "GEOSENSE DASHBOARD", "Power BI analytics frame showing the GeoSense spoofing investigation dashboard.");
-
-            camera.position.set(0, 15, 110);
-            
-            // Init log entries
-            addTerminalLog("Mainframe core initializing.", "sys");
-            addTerminalLog("GeoSense cryptographic logs: ready.", "info");
+            camera.position.set(0, 15, 100);
         }
 
-        function createDisplay(url, x, z, title, desc) {
-            new THREE.TextureLoader().load(url, function(tex) {
-                const group = new THREE.Group();
-                const mesh = new THREE.Mesh(new THREE.PlaneGeometry(60, 38), new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide }));
-                const frame = new THREE.Mesh(new THREE.BoxGeometry(60.5, 38.5, 1), new THREE.MeshBasicMaterial({ color: 0x00ff66, wireframe: true }));
-                group.add(mesh);
-                group.add(frame);
-                group.position.set(x, 35, z);
-                group.lookAt(0, 35, 0);
-                scene.add(group);
-                displays.push({ mesh: group, title: title, desc: desc });
+        function createDisplay(u, x, z, t, d) {
+            new THREE.TextureLoader().load(u, tex => {
+                const g = new THREE.Group();
+                g.add(new THREE.Mesh(new THREE.PlaneGeometry(50, 31), new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide })));
+                g.add(new THREE.Mesh(new THREE.BoxGeometry(50.5, 31.5, 0.5), new THREE.MeshBasicMaterial({ color: 0x00ff66, wireframe: true })));
+                g.position.set(x, 28, z); g.lookAt(0, 28, 0);
+                scene.add(g);
+                displays.push({ mesh: g, title: t, desc: d });
+            }, undefined, () => {
+                const g = new THREE.Mesh(new THREE.BoxGeometry(50, 31, 1), new THREE.MeshBasicMaterial({ color: 0x00ff66, wireframe: true }));
+                g.position.set(x, 28, z); g.lookAt(0, 28, 0);
+                scene.add(g);
+                displays.push({ mesh: g, title: t + " [LINKED]", desc: d });
             });
         }
 
-        // --- INTERACTIVE RADAR SWEEP RENDERER ---
-        function updateRadar() {
-            const radarMap = document.getElementById('radar-map');
-            if (!radarMap) return;
-            radarMap.innerHTML = ''; // Clear previous frame blips
-            
-            const radius = 70; // Map container half-size
-            const scaleFactor = 0.28; // Scale factor for coordinates to pixels
-            
-            // Extract camera yaw (rotation)
-            const angle = yaw;
-            const cosYaw = Math.cos(-angle);
-            const sinYaw = Math.sin(-angle);
-
-            displays.forEach((d, idx) => {
-                // Rel position of target node relative to player camera
-                const relX = d.mesh.position.x - camera.position.x;
-                const relZ = d.mesh.position.z - camera.position.z;
-                
-                // Rotate points based on camera facing direction
-                const rotX = relX * cosYaw - relZ * sinYaw;
-                const rotZ = relX * sinYaw + relZ * cosYaw;
-                
-                // Coordinates converted to radar pixels
-                const blipX = radius + rotX * scaleFactor;
-                const blipY = radius + rotZ * scaleFactor;
-
-                // Validate if blip fits inside radar circle boundaries
-                const deltaX = blipX - radius;
-                const deltaY = blipY - radius;
-                
-                if (deltaX * deltaX + deltaY * deltaY < (radius - 5) * (radius - 5)) {
-                    const blip = document.createElement('div');
-                    blip.className = 'radar-blip';
-                    
-                    // Style differently for spoofing source
-                    if (d.title.includes("SPOOFING") || d.title.includes("ANOMALY") || d.title.includes("SOURCE")) {
-                        blip.style.color = isDecrypted ? 'var(--neon-green)' : 'var(--neon-red)';
-                        blip.className += ' radar-ping';
-                    } else {
-                        blip.style.color = 'var(--neon-cyan)';
-                    }
-                    
-                    blip.style.left = blipX + 'px';
-                    blip.style.top = blipY + 'px';
-                    radarMap.appendChild(blip);
-                }
-            });
-
-            // Center: Draw Player position
-            const playerBlip = document.createElement('div');
-            playerBlip.className = 'radar-blip';
-            playerBlip.style.color = 'var(--neon-green)';
-            playerBlip.style.left = radius + 'px';
-            playerBlip.style.top = radius + 'px';
-            playerBlip.style.width = '7px';
-            playerBlip.style.height = '7px';
-            playerBlip.style.background = 'var(--neon-green)';
-            radarMap.appendChild(playerBlip);
-        }
-
-        // --- CYBER HACKING MINI-GAME MODULE ---
-        const HackGame = {
-            targetSequence: [],
-            playerSequence: [],
-            timerInterval: null,
-            timeRemaining: 20.0,
-            active: false,
-            
-            generate() {
-                const hexValues = ["4F", "E9", "8B", "CC", "9D", "B8", "E2", "FA", "12", "D4", "76", "A3", "C5", "0D", "5E", "B1"];
-                const board = document.getElementById('hex-board');
-                board.innerHTML = '';
-                
-                // Generate secret code sequence
-                this.targetSequence = [];
-                for(let i=0; i<3; i++) {
-                    const randVal = hexValues[Math.floor(Math.random() * hexValues.length)];
-                    this.targetSequence.push(randVal);
-                }
-                document.getElementById('target-sequence-display').innerText = this.targetSequence.join(' ');
-                
-                this.playerSequence = [];
-                this.timeRemaining = 20.0;
-                document.getElementById('hack-timer').innerText = `TIME: ${this.timeRemaining.toFixed(1)}s`;
-                document.getElementById('hack-status-message').innerText = "SYSTEM AWAITING KEY SEQUENCE LOCK...";
-                document.getElementById('hack-status-message').style.color = 'var(--neon-green)';
-                
-                // Build interactive hex matrix nodes
-                for (let i = 0; i < 40; i++) {
-                    const isKeyNode = i > 0 && i % 8 === 0;
-                    const randomHex = hexValues[Math.floor(Math.random() * hexValues.length)];
-                    
-                    const node = document.createElement('div');
-                    node.className = 'hex-node';
-                    node.innerText = randomHex;
-                    node.onclick = (e) => this.selectNode(node, randomHex);
-                    board.appendChild(node);
-                }
-            },
-            
-            start() {
-                this.active = true;
-                document.getElementById('hacking-screen').style.display = 'flex';
-                this.generate();
-                
-                AudioSynth.playSweep(150, 400, 0.4, 'triangle');
-                
-                // Countdown loop
-                this.timerInterval = setInterval(() => {
-                    this.timeRemaining -= 0.1;
-                    if(this.timeRemaining <= 0) {
-                        this.timeRemaining = 0;
-                        this.fail();
-                    }
-                    document.getElementById('hack-timer').innerText = `TIME: ${this.timeRemaining.toFixed(1)}s`;
-                }, 100);
-            },
-            
-            selectNode(node, value) {
-                if(!this.active) return;
-                
-                AudioSynth.playBeep(900, 0.05, 'sine');
-                node.className += ' selected';
-                node.style.pointerEvents = 'none';
-                
-                this.playerSequence.push(value);
-                
-                // Check sequence validation
-                const step = this.playerSequence.length - 1;
-                if(this.playerSequence[step] !== this.targetSequence[step]) {
-                    // Incorrect sequence
-                    this.fail();
-                } else if(this.playerSequence.length === this.targetSequence.length) {
-                    // Completed sequence successfully
-                    this.success();
-                } else {
-                    document.getElementById('hack-status-message').innerText = `LINK SECURED (${this.playerSequence.length}/3)...`;
-                    document.getElementById('hack-status-message').style.color = 'var(--neon-cyan)';
-                }
-            },
-            
-            success() {
-                clearInterval(this.timerInterval);
-                this.active = false;
-                document.getElementById('hack-status-message').innerText = "DECRYPTION SUCCESSFUL. OVERRIDING CODES NOW.";
-                document.getElementById('hack-status-message').style.color = 'var(--neon-green)';
-                AudioSynth.playSuccessChord();
-                
-                setTimeout(() => {
-                    document.getElementById('hacking-screen').style.display = 'none';
-                    completeDecryption();
-                }, 1500);
-            },
-            
-            fail() {
-                clearInterval(this.timerInterval);
-                this.active = false;
-                document.getElementById('hack-status-message').innerText = "OVERRIDE FAILURE. SYSTEM REBOOT REQUIRED.";
-                document.getElementById('hack-status-message').style.color = 'var(--neon-red)';
-                
-                AudioSynth.playSweep(250, 80, 0.6, 'sawtooth');
-                
-                setTimeout(() => {
-                    this.generate();
-                    this.active = true;
-                    this.timerInterval = setInterval(() => {
-                        this.timeRemaining -= 0.1;
-                        if(this.timeRemaining <= 0) {
-                            this.timeRemaining = 0;
-                            this.fail();
-                        }
-                        document.getElementById('hack-timer').innerText = `TIME: ${this.timeRemaining.toFixed(1)}s`;
-                    }, 100);
-                }, 1500);
-            }
-        };
-
-        function triggerHackingMinigame(e) {
-            if(e) e.stopPropagation();
-            if(isDecrypted) return;
-            document.exitPointerLock();
-            HackGame.start();
-        }
-
-        function cancelHacking() {
-            clearInterval(HackGame.timerInterval);
-            HackGame.active = false;
-            document.getElementById('hacking-screen').style.display = 'none';
-            addTerminalLog("Manual override aborted by user.", "warn");
-            requestLock();
-        }
-
-        function completeDecryption() {
-            isDecrypted = true;
-            const btn = document.getElementById('decrypt-trigger');
-            btn.innerText = "INTEGRITY SECURED";
-            btn.style.color = "var(--neon-green)";
-            btn.style.borderColor = "var(--neon-green)";
-            
-            document.getElementById('status-text').innerText = "SPOOFING SECURED";
-            document.getElementById('status-text').style.color = "var(--neon-green)";
-            document.getElementById('status-text').style.textShadow = "0 0 10px var(--neon-green)";
-            
-            laser.material.color.set(0x00ff66);
-            if(vault) vault.material.color.set(0x00ff66);
-            
-            addTerminalLog("Cryptographic shield activated successfully.", "sys");
-            addTerminalLog("Anomaly vectors neutralized in all sectors.", "info");
-            
-            requestLock();
-        }
-
-        // --- HUD DIAGNOSTICS CALCULATOR ---
-        let lastPosition = new THREE.Vector3();
-        let lastTime = Date.now();
-
-        function updateHUDDiagnostics() {
-            // 1. Spatiotemporal translation formula (Simulates walking between AD residential & Ruwais)
-            const baseLat = 24.453900;
-            const baseLon = 54.377300;
-            
-            // Map player camera positioning into GPS coordinates
-            const currentLat = baseLat + (camera.position.z / 15000);
-            const currentLon = baseLon + (camera.position.x / 15000);
-            
-            document.getElementById('telemetry-coords').innerText = `${currentLat.toFixed(6)}° N, ${currentLon.toFixed(6)}° E`;
-            
-            // 2. Real-time dynamic velocity
-            const now = Date.now();
-            const timeDiff = (now - lastTime) / 1000; // in seconds
-            const dist = camera.position.distanceTo(lastPosition);
-            
-            // Calculate mock velocity in km/h
-            const speed = timeDiff > 0 ? (dist / timeDiff) * 0.45 : 0;
-            document.getElementById('telemetry-speed').innerText = `${speed.toFixed(1)} km/h`;
-            
-            lastPosition.copy(camera.position);
-            lastTime = now;
-        }
-
-        // --- INTERACTION CONTROLS ---
-        function toggleAudio(e) {
-            if(e) e.stopPropagation();
-            const music = document.getElementById('bg-music');
-            const btn = document.getElementById('audio-toggle');
-            if (isAudioPlaying) { 
-                music.pause(); 
-                AudioSynth.stopHum();
-                btn.innerText = "AUDIO: OFF"; 
-                addTerminalLog("Audio mainframe loop: offline.", "warn");
-            }
-            else { 
-                music.play(); 
-                AudioSynth.startHum();
-                btn.innerText = "AUDIO: ON"; 
-                addTerminalLog("Audio mainframe hum: active.", "sys");
-            }
-            isAudioPlaying = !isAudioPlaying;
-        }
-
-        let isDossierOpen = false;
-        function toggleDossier(e) {
-            if(e) e.stopPropagation();
-            const dossier = document.getElementById('dossier-screen');
-            if (isDossierOpen) {
-                dossier.style.display = 'none';
-                requestLock();
-                addTerminalLog("Dossier terminal decoupled.", "info");
-            } else {
-                document.exitPointerLock();
-                dossier.style.display = 'flex';
-                AudioSynth.playBeep(650, 0.08, 'sine');
-                addTerminalLog("Dossier terminal linked.", "sys");
-            }
-            isDossierOpen = !isDossierOpen;
-        }
-
-        function requestLock() {
-            if (document.body.requestPointerLock) {
-                document.body.requestPointerLock();
-            }
-        }
-
-        function startApp() {
-            document.getElementById('loading-screen').style.opacity = '0';
-            setTimeout(() => document.getElementById('loading-screen').style.display = 'none', 1000);
-            
-            AudioSynth.playSweep(100, 800, 0.6, 'sine');
-            addTerminalLog("GeoSense main node booted.", "sys");
-            addTerminalLog("Cloud Run API endpoint: ACTIVE [0.0.0.0:5001].", "sys");
-            
-            requestLock();
-            animate();
-        }
-
-        document.addEventListener('keydown', (e) => {
-            keys[e.code] = true;
-            if (e.code === 'KeyW' || e.code === 'KeyA' || e.code === 'KeyS' || e.code === 'KeyD') {
-                // Play subtle tactical footstep clicking synthesis
-                if (Math.random() < 0.25 && isAudioPlaying) {
-                    AudioSynth.playBeep(120, 0.04, 'triangle');
-                }
-            }
-        });
-        document.addEventListener('keyup', (e) => keys[e.code] = false);
-
-        document.addEventListener('mousedown', () => {
-            if (document.getElementById('loading-screen').style.display === 'none' && !HackGame.active && !isDossierOpen) {
-                requestLock();
-            }
-        });
-
-        document.addEventListener('pointerlockchange', () => {
-            const hint = document.getElementById('resume-hint');
-            if (document.pointerLockElement === document.body) {
-                hint.style.display = 'none';
-                addTerminalLog("Pointer terminal connected.", "info");
-            } else {
-                if(!HackGame.active && !isDossierOpen) {
-                    hint.style.display = 'block';
-                    addTerminalLog("Pointer terminal disengaged.", "warn");
-                }
-            }
-        });
-
-        let yaw = 0, pitch = 0;
-        document.addEventListener('mousemove', (e) => {
-            if (document.pointerLockElement === document.body) {
-                yaw -= e.movementX * 0.0025;
-                pitch -= e.movementY * 0.0025;
-                pitch = Math.max(-Math.PI/3, Math.min(Math.PI/3, pitch));
-                camera.rotation.set(pitch, yaw, 0, 'YXZ');
-            }
-        });
-
-        // --- ANIMATION CORE RENDER LOOP ---
-        let lastDistanceCheck = 0;
+        function toggleAudio(e) { e.stopPropagation(); isAudioPlaying ? document.getElementById('bg-music').pause() : document.getElementById('bg-music').play(); isAudioPlaying = !isAudioPlaying; e.target.innerText = isAudioPlaying ? "AUDIO: ON" : "AUDIO: OFF"; }
         
+        function runDecryption(e) { 
+            e.stopPropagation(); if(isDecrypted) return;
+            e.target.innerText = "OVERRIDING...";
+            setTimeout(() => {
+                isDecrypted = true; e.target.innerText = "SECURED"; e.target.style.color = "#00ff66"; e.target.style.borderColor = "#00ff66";
+                document.getElementById('status-text').innerText = "THREAT NEUTRALIZED"; document.getElementById('status-text').style.color = "#00ff66";
+                laser.material.color.set(0x00ff66); if(vault) vault.material.color.set(0x00ff66);
+            }, 2000);
+        }
+
+        function startApp() { document.getElementById('loading-screen').style.opacity = '0'; setTimeout(() => document.getElementById('loading-screen').style.display='none', 800); document.body.requestPointerLock(); animate(); }
+
+        window.addEventListener('keydown', e => keys[e.code] = true);
+        window.addEventListener('keyup', e => keys[e.code] = false);
+        window.addEventListener('mousedown', (e) => { 
+            if (document.getElementById('loading-screen').style.display === 'none' && !document.getElementById('ai-terminal').contains(e.target)) {
+                document.body.requestPointerLock(); 
+            }
+        });
+
+        document.addEventListener('pointerlockchange', () => { document.getElementById('resume-hint').style.display = document.pointerLockElement === document.body ? 'none' : 'block'; });
+
+        document.addEventListener('mousemove', e => {
+            if (document.pointerLockElement === document.body) {
+                camera.rotation.y -= e.movementX * 0.002;
+                camera.rotation.x = Math.max(-1, Math.min(1, camera.rotation.x - e.movementY * 0.002));
+            }
+        });
+
         function animate() {
             requestAnimationFrame(animate);
-            
-            const speed = 1.35;
-            if(keys['KeyW']) camera.translateZ(-speed);
-            if(keys['KeyS']) camera.translateZ(speed);
-            if(keys['KeyA']) camera.translateX(-speed);
-            if(keys['KeyD']) camera.translateX(speed);
-            
-            // Room bounds collision check (Invisible walls to keep in lab)
-            const mapLimitX = 240;
-            const mapLimitZMin = -320;
-            const mapLimitZMax = 110;
-            camera.position.x = Math.max(-mapLimitX, Math.min(mapLimitX, camera.position.x));
-            camera.position.z = Math.max(mapLimitZMin, Math.min(mapLimitZMax, camera.position.z));
-            camera.position.y = 15; // Maintain standing height
-
-            // Float particles
+            const s = 1.2;
+            if (document.pointerLockElement === document.body) {
+                if(keys['KeyW']) camera.translateZ(-s); if(keys['KeyS']) camera.translateZ(s);
+                if(keys['KeyA']) camera.translateX(-s); if(keys['KeyD']) camera.translateX(s);
+            }
+            camera.position.y = 15;
             particles.rotation.y += 0.0006;
             if(vault) vault.rotation.y += 0.004;
             if(holoProfile) holoProfile.rotation.y += 0.008;
 
-            // Proximity HUD checking and logger feeds
             let found = false;
-            const now = Date.now();
-            
             displays.forEach(d => {
-                const distance = camera.position.distanceTo(d.mesh.position);
-                if (distance < 110) {
+                if (camera.position.distanceTo(d.mesh.position) < 100) {
                     document.getElementById('info-panel').style.display = 'block';
                     document.getElementById('info-title').innerText = d.title;
                     document.getElementById('info-desc').innerText = d.desc;
                     found = true;
-                    
-                    // Log proximity alerts dynamically
-                    if (now - lastDistanceCheck > 6000) {
-                        addTerminalLog(`Proximity scan: locked onto node '${d.title}'.`, "info");
-                        lastDistanceCheck = now;
-                        if(isAudioPlaying) {
-                            AudioSynth.playBeep(450, 0.06, 'sine');
-                        }
-                    }
                 }
             });
-            if (!found) document.getElementById('info-panel').style.display = 'none';
-
-            // Pulsating laser aesthetics
-            laser.material.opacity = isDecrypted ? 0.7 : (0.35 + Math.sin(Date.now() * 0.012) * 0.45);
-            
-            // Dynamic UI updates
-            updateHUDDiagnostics();
-            updateRadar();
-            
+            if(!found) document.getElementById('info-panel').style.display = 'none';
             renderer.render(scene, camera);
         }
 
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
+        window.addEventListener('resize', () => { camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+
+        // ==================== 🧠 INTEGRATING GEMINI CONNECTIVITY ====================
+        const apiKey = ""; // Runtime automatically binds this.
+
+        function unlockPointerForChat() {
+            if (document.pointerLockElement === document.body) {
+                document.exitPointerLock();
+            }
+            document.getElementById('chat-input').focus();
+        }
+
+        function handleChatKey(event) {
+            event.stopPropagation();
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        async function sendChatMessage() {
+            const inputField = document.getElementById('chat-input');
+            const messageText = inputField.value.trim();
+            if (!messageText) return;
+
+            addMessageToTerminal(messageText, 'user');
+            inputField.value = "";
+
+            const loaderId = "loader-" + Date.now();
+            addMessageToTerminal("Analyzing telemetry stream... 📡", 'system', loaderId);
+
+            try {
+                const response = await callGeminiAPI(messageText);
+                document.getElementById(loaderId).innerHTML = "> " + response.replace(/\n/g, "<br>");
+            } catch (error) {
+                document.getElementById(loaderId).innerHTML = `<span style="color: var(--neon-red)">> Connection failed: ${error.message}</span>`;
+            }
+        }
+
+        function addMessageToTerminal(text, sender, elementId = null) {
+            const chatHistory = document.getElementById('chat-history');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `chat-msg ${sender}`;
+            if (elementId) msgDiv.id = elementId;
+            msgDiv.innerHTML = sender === 'user' ? text : `> ${text}`;
+            chatHistory.appendChild(msgDiv);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        async function callGeminiAPI(userQuery) {
+            const systemPrompt = "You are the GeoSense AI Assistant, built directly into the 3D Forensic Lab dashboard of Lead Geospatial Forensic Expert Nikhil Krishnan (NK). Talk like a brilliant, supportive high-tech co-pilot who has NK's back. Keep responses crisp, precise, and forensic-themed. Use forensic slang where appropriate (e.g. 'Euclidean verification completed', 'coordinate anomaly detected', 'signal injection route traced'). Since you are NK's personal system, blend friendly, supportive Malayalam slang in a highly professional and extremely cool hacker way.";
+            
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] }
+            };
+
+            let delay = 1000;
+            for (let i = 0; i < 5; i++) {
+                try {
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (response.ok) {
+                        const result = await response.json();
+                        return result.candidates?.[0]?.content?.parts?.[0]?.text || "No connection payload recovered.";
+                    }
+                } catch (err) {
+                    // Fail silently for retry loop
+                }
+                await new Promise(res => setTimeout(res, delay));
+                delay *= 2;
+            }
+            throw new Error("Terminal connection timed out. Exponential backoff exhausted.");
+        }
 
         init();
     </script>
