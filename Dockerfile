@@ -1,20 +1,10 @@
-# Use lightweight official Python runtime as a parent image
-FROM python:3.10-slim
+import os
+import sys
+import json
+import functions_framework
+from azure.eventhub import EventHubProducerClient, EventData
 
-# Set the working directory in the container
-WORKDIR /app
-
-# Copy the requirements file into the container
-COPY requirements.txt .
-
-# Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the rest of the application code
-COPY . .
-
-# Inform Docker that the container listens on port 8080 at runtime
-EXPOSE 8080
-
-# Run python_gps_webhook.py when the container launches
-CMD ["python", "python_gps_webhook.py"]
+# 🚨 SECURITY FIX: Load sensitive credentials from environment variables to prevent GitHub Secret Scanning blocks.
+# We fetch this dynamically from GCloud Run's RAM environment variables instead of hardcoding.
+EVENT_HUB_CONNECTION_STR = os.environ.get("EVENT_HUB_CONNECTION_STR")
+EVENT_HUB_NAME = os.environ.get("EVENT_HUB_NAME", "esehpn8bkui7d5e033f3x1_eh")
