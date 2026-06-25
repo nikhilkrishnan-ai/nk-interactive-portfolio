@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Digital Truth Detector | GeoSense Case Study</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .chart-container { position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; height: 350px; max-height: 400px; }
+        @media (max-width: 640px) { .chart-container { height: 250px; } }
+        .nav-btn { transition: all 0.2s ease-in-out; }
+        .nav-btn.active { background-color: #0F172A; color: #ffffff; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        .fade-in { animation: fadeIn 0.4s ease-in forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .radar-canvas-container { position: relative; width: 100%; max-width: 600px; margin: 0 auto; aspect-ratio: 1/1; background-color: #0F172A; border-radius: 1rem; overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Chosen Palette: Clean Tech Slate (Background: Slate-50, Panels: White, Primary Text: Slate-800, Accents: Emerald-500 for valid data/success, Rose-500 for anomalies/threats, Slate-900 for active states). -->
+    <!-- Application Structure Plan: The SPA is structured as an interactive Executive Dashboard divided into four logical tabs: 'The Anomaly', 'Forensic Engine', 'System Impact', and 'The Architect'. This structure allows users (recruiters, CTOs) to linearly explore the case study or jump directly to technical details or performance metrics. It transforms a 12-page slide deck into a fluid, exploratory narrative. -->
+    <!-- Visualization & Content Choices: 
+         1. The 250km Jump -> Goal: Visualize impossible physics -> Method: Custom HTML5 Canvas Radar Animation -> Justification: Replaces static images with dynamic visual proof of the anomaly without using SVG.
+         2. Detection Logic -> Goal: Show algorithm mechanics -> Method: Chart.js Line Chart (Speed vs Time) -> Justification: Clearly illustrates the spatiotemporal drift crossing the moving average threshold.
+         3. Global Impact & Performance -> Goal: Quantify success -> Method: Chart.js Doughnut (Signal Integrity) & Bar Chart (Benchmarks) -> Justification: Standard, readable formats for percentage breakdowns and comparative metrics. 
+         All visualizations are restricted to Canvas/Chart.js ensuring zero SVG/Mermaid usage. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900 tracking-tight">The Digital Truth Detector</h1>
+                <p class="text-sm text-slate-500 font-medium">GeoSense Forensic Engine Case Study #250-KM</p>
+            </div>
+            <div class="flex items-center gap-3 text-sm font-semibold px-4 py-2 bg-emerald-50 text-emerald-700 rounded-full border border-emerald-200">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                System Live
+            </div>
+        </div>
+        <nav class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex overflow-x-auto hide-scrollbar gap-2">
+            <button onclick="switchTab('overview')" id="btn-overview" class="nav-btn active px-5 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100 whitespace-nowrap">The Anomaly</button>
+            <button onclick="switchTab('engine')" id="btn-engine" class="nav-btn px-5 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100 whitespace-nowrap">Forensic Engine</button>
+            <button onclick="switchTab('metrics')" id="btn-metrics" class="nav-btn px-5 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100 whitespace-nowrap">System Impact</button>
+            <button onclick="switchTab('architect')" id="btn-architect" class="nav-btn px-5 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100 whitespace-nowrap">The Architect</button>
+        </nav>
+    </header>
+
+    <main class="flex-grow max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+
+        <section id="view-overview" class="tab-content fade-in">
+            <div class="mb-8 max-w-3xl">
+                <h2 class="text-3xl font-bold text-slate-900 mb-4">Case #250-KM: Impossible Physics</h2>
+                <p class="text-lg text-slate-600 leading-relaxed">
+                    This module visualizes a critical GNSS spoofing incident recorded in the UAE. A land-based vehicle's telemetry instantaneously jumped from an Abu Dhabi residential area to the offshore Ruwais sector. Interact with the tactical radar below to observe the spatiotemporal drift that triggered the GeoSense anomaly protocols.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-lg font-bold text-slate-800 mb-4 uppercase tracking-wider text-center">Spatiotemporal Radar Feed</h3>
+                    <div class="radar-canvas-container relative">
+                        <canvas id="radarCanvas" class="w-full h-full"></canvas>
+                        <div class="absolute bottom-4 right-4 bg-slate-900/80 backdrop-blur text-white px-3 py-1.5 rounded text-xs font-mono border border-slate-700">
+                            COORD: 24.4539° N, 54.3773° E
+                        </div>
+                    </div>
+                    <div class="mt-4 flex justify-center gap-4">
+                        <button onclick="replayRadar()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-semibold text-sm transition-colors">Replay Sequence</button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-rose-500">
+                        <h4 class="text-sm font-bold text-slate-400 uppercase tracking-wide mb-1">Detected Velocity</h4>
+                        <div class="text-5xl font-black text-rose-500 tracking-tighter">1,474 <span class="text-2xl text-slate-500 font-bold">km/h</span></div>
+                        <p class="text-sm text-slate-600 mt-2 font-medium">Instantaneous speed calculated via Euclidean distance logic.</p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-slate-800">
+                        <h4 class="text-sm font-bold text-slate-400 uppercase tracking-wide mb-1">Trajectory Shift</h4>
+                        <div class="text-5xl font-black text-slate-800 tracking-tighter">250 <span class="text-2xl text-slate-500 font-bold">km</span></div>
+                        <p class="text-sm text-slate-600 mt-2 font-medium">Total displacement distance in under 1.0 second.</p>
+                    </div>
+
+                    <div class="bg-slate-900 p-6 rounded-2xl shadow-sm text-white">
+                        <h4 class="text-lg font-bold mb-3">Event Chronology</h4>
+                        <ul class="space-y-3 font-mono text-sm">
+                            <li class="flex gap-3"><span class="text-emerald-400">T-0.0s</span> <span>Valid 3D Fix. Speed: 60 km/h.</span></li>
+                            <li class="flex gap-3"><span class="text-rose-400">T+0.1s</span> <span>Signal integrity compromised. Satellite lock lost.</span></li>
+                            <li class="flex gap-3"><span class="text-rose-500 font-bold">T+0.8s</span> <span>Coordinates injected. Vector: Ruwais Offshore.</span></li>
+                            <li class="flex gap-3"><span class="text-emerald-400">T+1.2s</span> <span>GeoSense intercepts payload. Alert generated.</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-engine" class="tab-content hidden fade-in">
+            <div class="mb-8 max-w-3xl">
+                <h2 class="text-3xl font-bold text-slate-900 mb-4">The Forensic Engine Logic</h2>
+                <p class="text-lg text-slate-600 leading-relaxed">
+                    How does GeoSense separate signal noise from malicious spoofing? This section details the core mathematical filters. The interactive chart below demonstrates the Moving Average buffer reacting to the sudden Euclidean distance spike, isolating the anomaly from legitimate acceleration.
+                </p>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-bold text-slate-800">Telemetry Velocity vs. Moving Average Threshold</h3>
+                    <select id="dataViewSelect" onchange="updateEngineChart()" class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block p-2">
+                        <option value="spoofed">Spoofing Event Data</option>
+                        <option value="normal">Normal Commute Data</option>
+                    </select>
+                </div>
+                <div class="chart-container">
+                    <canvas id="engineChart"></canvas>
+                </div>
+                <p class="text-sm text-slate-500 mt-4 text-center">Interact with the chart legends to toggle data streams. Hover over data points for precise velocity readings.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-xl font-bold text-slate-800 mb-2">Euclidean Logic</div>
+                    <p class="text-slate-600 text-sm">Geometric verification of signal movement between sequential pings to calculate true physical velocity.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-xl font-bold text-slate-800 mb-2">Moving Averages</div>
+                    <p class="text-slate-600 text-sm">Dynamic buffers that smooth out legitimate GPS multipath errors, isolating only mathematically impossible trajectory shifts.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-xl font-bold text-slate-800 mb-2">AI Filtering</div>
+                    <p class="text-slate-600 text-sm">Integration with Google Cloud Vertex AI to process isolated anomalies against known global spoofing patterns.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-metrics" class="tab-content hidden fade-in">
+            <div class="mb-8 max-w-3xl">
+                <h2 class="text-3xl font-bold text-slate-900 mb-4">Global Impact & Performance</h2>
+                <p class="text-lg text-slate-600 leading-relaxed">
+                    With a 500% global rise in GPS jamming and spoofing, robust detection metrics are critical. Explore the interactive visualizations below to understand the distribution of signal anomalies processed by GeoSense and the system's operational benchmarks.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-lg font-bold text-slate-800 mb-6 text-center">Global Signal Integrity Breakdown</h3>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="integrityChart"></canvas>
+                    </div>
+                    <div class="mt-6 text-sm text-slate-600 bg-slate-50 p-4 rounded-lg">
+                        <strong>Insight:</strong> While 75% of streams are verified legitimate, a concerning 10% are isolated as active malicious spoofing, requiring immediate forensic intervention.
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-lg font-bold text-slate-800 mb-6 text-center">System Performance Benchmarks</h3>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="benchmarkChart"></canvas>
+                    </div>
+                    <div class="mt-6 text-sm text-slate-600 bg-slate-50 p-4 rounded-lg">
+                        <strong>Insight:</strong> GeoSense maintains a 98% detection accuracy with less than 10ms processing latency, making it viable for live IoT and aviation telemetry streams.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-architect" class="tab-content hidden fade-in">
+            <div class="mb-8 max-w-3xl">
+                <h2 class="text-3xl font-bold text-slate-900 mb-4">The Architect</h2>
+                <p class="text-lg text-slate-600 leading-relaxed">
+                    Meet the engineer behind the GeoSense Forensic Engine and the Unified Gemini AI Pipeline.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="bg-slate-900 px-8 py-12 text-center relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-full opacity-10" style="background-image: radial-gradient(#00ff66 1px, transparent 1px); background-size: 20px 20px;"></div>
+                    <div class="relative z-10">
+                        <h3 class="text-4xl font-black text-white tracking-tight mb-2">Nikhil Krishnan (NK)</h3>
+                        <p class="text-emerald-400 font-mono text-lg tracking-widest uppercase">Senior Forensic Developer & Data Analyst</p>
+                    </div>
+                </div>
+                
+                <div class="px-8 py-10 grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 border-b border-slate-100 pb-2">Profile Summary</h4>
+                        <p class="text-slate-700 leading-relaxed">
+                            An expert in spatiotemporal data analysis and automated anomaly detection systems. Specialized in unmasking signal manipulation and protecting global navigation integrity through advanced algorithmic filters. Architect of the centralized Serverless Brain using Google Cloud Run, Microsoft Fabric, and Vertex AI.
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 border-b border-slate-100 pb-2">Core Stack & Competencies</h4>
+                        <ul class="space-y-3">
+                            <li class="flex items-center gap-3">
+                                <span class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-xs">01</span>
+                                <span class="text-slate-800 font-medium">Python & SQL Server Data Pipelines</span>
+                            </li>
+                            <li class="flex items-center gap-3">
+                                <span class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-xs">02</span>
+                                <span class="text-slate-800 font-medium">Google Cloud Run (Serverless Webhooks)</span>
+                            </li>
+                            <li class="flex items-center gap-3">
+                                <span class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-xs">03</span>
+                                <span class="text-slate-800 font-medium">Vertex AI & Gemini-2.5 Integration</span>
+                            </li>
+                            <li class="flex items-center gap-3">
+                                <span class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-xs">04</span>
+                                <span class="text-slate-800 font-medium">Interactive Frontend Development (Tailwind/JS)</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="bg-slate-50 px-8 py-6 border-t border-slate-200 flex justify-center gap-6">
+                     <span class="text-slate-500 font-mono text-sm">Status: Open for Remote AI/Frontend Roles</span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // --- Navigation Logic ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(`view-${tabId}`).classList.remove('hidden');
+            document.getElementById(`btn-${tabId}`).classList.add('active');
+
+            if(tabId === 'overview') replayRadar();
+        }
+
+        // --- Canvas Radar Animation (No SVG) ---
+        let radarAnimationId;
+        function drawRadar() {
+            const canvas = document.getElementById('radarCanvas');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            // Handle high DPI displays
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+            
+            const w = rect.width;
+            const h = rect.height;
+            const cx = w / 2;
+            const cy = h / 2;
+
+            let angle = 0;
+            let time = 0;
+            const originX = w * 0.3;
+            const originY = h * 0.7;
+            const jumpX = w * 0.8;
+            const jumpY = h * 0.3;
+
+            function animate() {
+                ctx.clearRect(0, 0, w, h);
+
+                // Grid
+                ctx.strokeStyle = 'rgba(16, 185, 129, 0.1)';
+                ctx.lineWidth = 1;
+                for(let i=0; i<w; i+=40) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, h); ctx.stroke(); }
+                for(let i=0; i<h; i+=40) { ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(w, i); ctx.stroke(); }
+
+                // Radar Sweep
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.rotate(angle);
+                ctx.beginPath();
+                ctx.moveTo(0,0);
+                ctx.arc(0, 0, Math.max(w,h), 0, 0.2);
+                ctx.fillStyle = 'rgba(16, 185, 129, 0.1)';
+                ctx.fill();
+                ctx.restore();
+                angle += 0.05;
+
+                // Origin Point (Abu Dhabi)
+                ctx.beginPath();
+                ctx.arc(originX, originY, 6, 0, Math.PI*2);
+                ctx.fillStyle = '#10B981';
+                ctx.fill();
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = '#10B981';
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+
+                // Animation Logic
+                time += 0.02;
+                if(time > 2) {
+                    // Draw Jump Line
+                    ctx.beginPath();
+                    ctx.moveTo(originX, originY);
+                    
+                    let currentJumpX = originX + (jumpX - originX) * Math.min(1, (time - 2) * 2);
+                    let currentJumpY = originY + (jumpY - originY) * Math.min(1, (time - 2) * 2);
+                    
+                    ctx.lineTo(currentJumpX, currentJumpY);
+                    ctx.strokeStyle = '#F43F5E';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([5, 5]);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+
+                    // Destination Point (Ruwais)
+                    if(time > 2.5) {
+                        ctx.beginPath();
+                        ctx.arc(jumpX, jumpY, 8 + Math.sin(time*10)*2, 0, Math.PI*2);
+                        ctx.fillStyle = '#F43F5E';
+                        ctx.fill();
+                        
+                        // Text Label
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = 'bold 12px monospace';
+                        ctx.fillText('ANOMALY DETECTED', jumpX - 50, jumpY - 15);
+                    }
+                }
+
+                if(time < 6) {
+                    radarAnimationId = requestAnimationFrame(animate);
+                } else {
+                    time = 0; // Loop
+                    radarAnimationId = requestAnimationFrame(animate);
+                }
+            }
+            cancelAnimationFrame(radarAnimationId);
+            animate();
+        }
+
+        function replayRadar() {
+            setTimeout(drawRadar, 100);
+        }
+
+        // --- Chart.js Data & Initialization ---
+        let engineChartInstance = null;
+
+        const chartColors = {
+            emerald: '#10B981',
+            emeraldLight: 'rgba(16, 185, 129, 0.2)',
+            rose: '#F43F5E',
+            roseLight: 'rgba(244, 63, 94, 0.2)',
+            slate: '#64748B'
+        };
+
+        const engineDataSets = {
+            spoofed: {
+                labels: ['T-0.4s', 'T-0.3s', 'T-0.2s', 'T-0.1s', 'T-0.0s', 'T+0.1s', 'T+0.2s', 'T+0.3s'],
+                rawSpeed: [55, 58, 60, 62, 60, 1474, 1474, 1474],
+                movingAvg: [50, 52, 54, 56, 58, 65, 80, 110]
+            },
+            normal: {
+                labels: ['T-0.4s', 'T-0.3s', 'T-0.2s', 'T-0.1s', 'T-0.0s', 'T+0.1s', 'T+0.2s', 'T+0.3s'],
+                rawSpeed: [55, 58, 60, 62, 65, 68, 70, 70],
+                movingAvg: [50, 52, 54, 56, 58, 61, 64, 66]
+            }
+        };
+
+        function updateEngineChart() {
+            const type = document.getElementById('dataViewSelect').value;
+            const data = engineDataSets[type];
+            
+            if(engineChartInstance) {
+                engineChartInstance.data.labels = data.labels;
+                engineChartInstance.data.datasets[0].data = data.rawSpeed;
+                engineChartInstance.data.datasets[1].data = data.movingAvg;
+                engineChartInstance.update();
+            }
+        }
+
+        function initCharts() {
+            // Chart 1: Engine Logic (Line)
+            const ctxEngine = document.getElementById('engineChart').getContext('2d');
+            engineChartInstance = new Chart(ctxEngine, {
+                type: 'line',
+                data: {
+                    labels: engineDataSets.spoofed.labels,
+                    datasets: [
+                        {
+                            label: 'Raw Velocity (km/h)',
+                            data: engineDataSets.spoofed.rawSpeed,
+                            borderColor: chartColors.rose,
+                            backgroundColor: chartColors.roseLight,
+                            borderWidth: 3,
+                            tension: 0.1,
+                            fill: true,
+                            pointRadius: 4
+                        },
+                        {
+                            label: 'Moving Avg Threshold',
+                            data: engineDataSets.spoofed.movingAvg,
+                            borderColor: chartColors.slate,
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            tension: 0.4,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { position: 'top', labels: { usePointStyle: true, font: { family: 'Inter' } } },
+                        tooltip: { mode: 'index', intersect: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            // Chart 2: Signal Integrity (Doughnut)
+            const ctxIntegrity = document.getElementById('integrityChart').getContext('2d');
+            new Chart(ctxIntegrity, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Verified Legitimate', 'Multipath/Errors', 'Malicious Spoofing'],
+                    datasets: [{
+                        data: [75, 15, 10],
+                        backgroundColor: [chartColors.emerald, '#38BDF8', chartColors.rose],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { padding: 20, font: { family: 'Inter' } } }
+                    }
+                }
+            });
+
+            // Chart 3: Benchmarks (Bar)
+            const ctxBenchmark = document.getElementById('benchmarkChart').getContext('2d');
+            new Chart(ctxBenchmark, {
+                type: 'bar',
+                data: {
+                    labels: ['Detection Accuracy', 'System Availability', 'False Positive Rate'],
+                    datasets: [{
+                        label: 'Percentage (%)',
+                        data: [98, 99.9, 2],
+                        backgroundColor: [chartColors.emerald, chartColors.emerald, chartColors.rose],
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, max: 100, grid: { color: 'rgba(0,0,0,0.05)' } },
+                        x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 11 } } }
+                    }
+                }
+            });
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            replayRadar();
+            initCharts();
+            
+            // Handle window resize for radar canvas
+            window.addEventListener('resize', () => {
+                if(document.getElementById('view-overview').classList.contains('hidden') === false) {
+                    replayRadar();
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>

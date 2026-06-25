@@ -352,6 +352,121 @@
             font-size: 13px; font-weight: bold; letter-spacing: 3px;
             margin-top: 15px; height: 20px;
         }
+
+        /* ==================== 🧠 GEOSENSE GEMINI AI TERMINAL STYLE ==================== */
+        #ai-terminal {
+            position: absolute;
+            top: 215px; left: 30px;
+            width: 330px;
+            height: 270px;
+            background: var(--terminal-bg);
+            border: 1px solid var(--neon-green);
+            border-left: 5px solid var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 255, 102, 0.15);
+            border-radius: 0 8px 8px 0;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        #ai-terminal.minimized {
+            height: 38px;
+            border-left-color: var(--neon-red);
+        }
+        .term-header {
+            background: rgba(0, 255, 102, 0.08);
+            border-bottom: 1px solid rgba(0, 255, 102, 0.3);
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .term-title {
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .pulse-dot {
+            width: 6px; height: 6px;
+            background-color: var(--neon-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--neon-cyan);
+            animation: blink 1.5s infinite;
+        }
+        .term-body {
+            flex-grow: 1;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--neon-green) transparent;
+        }
+        .chat-msg {
+            font-size: 11px;
+            line-height: 1.4;
+            padding: 6px 10px;
+            border-radius: 4px;
+            max-width: 85%;
+            word-wrap: break-word;
+        }
+        .chat-msg.system {
+            background: rgba(0, 255, 102, 0.03);
+            border-left: 2px solid var(--neon-green);
+            color: #d1ffd1;
+            align-self: flex-start;
+        }
+        .chat-msg.user {
+            background: rgba(0, 255, 204, 0.15);
+            border-right: 2px solid var(--neon-cyan);
+            color: #fff;
+            align-self: flex-end;
+            text-align: right;
+        }
+        .term-footer {
+            border-top: 1px solid rgba(0, 255, 102, 0.2);
+            padding: 8px;
+            display: flex;
+            gap: 6px;
+            background: rgba(0, 4, 0, 0.85);
+        }
+        .term-input {
+            flex-grow: 1;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(0, 255, 102, 0.4);
+            color: #fff;
+            padding: 6px 10px;
+            font-family: inherit;
+            font-size: 11px;
+            border-radius: 4px;
+        }
+        .term-input:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 8px rgba(0, 255, 204, 0.2);
+        }
+        .term-send {
+            background: var(--neon-green);
+            color: #000;
+            border: none;
+            padding: 0 10px;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 10px;
+            transition: 0.2s;
+        }
+        .term-send:hover {
+            box-shadow: 0 0 10px var(--neon-green);
+        }
     </style>
 </head>
 <body>
@@ -374,7 +489,7 @@
         <button class="btn" onclick="startApp()">BOOT MAINFRAME</button>
     </div>
 
-    <!-- Operator Dossier Clearance Card Screen -->
+  <!-- Operator Dossier Clearance Card Screen -->
     <div id="dossier-screen">
         <div class="dossier-container">
             <div class="dossier-header">
@@ -443,7 +558,7 @@
         <div class="hacking-container">
             <div class="hack-title">CYBER INTERFERER OVERRIDE</div>
             <div class="hack-instruction">
-                BUFFER DISCREPANCY DETECTED. SELECT THE TARGET OVERRIDE CHIP SEQUENCE IN SEQUENCE TO NEUTRALIZE THE TELEMETRY DRIFT.
+                BUFFER DISCREPANCY DETECTED. SELECT THE TARGET OVERRIDE CHIP SEQUENCE IN SEQUENCE TO NEUZTALIZE THE TELEMETRY DRIFT.
             </div>
             <div style="font-size:12px; margin-bottom: 5px; opacity:0.8;">TARGET SEQUENCE:</div>
             <div class="buffer-box" id="target-sequence-display">8B CC E9</div>
@@ -460,6 +575,24 @@
         </div>
     </div>
 
+    <!-- ==================== 🧠 GEOSENSE GEMINI AI TERMINAL WINDOW ==================== -->
+    <div id="ai-terminal" onclick="unlockPointerForChat(event)">
+        <div class="term-header">
+            <div class="term-title">
+                <div class="pulse-dot"></div>
+                GEOSENSE GEMINI CO-PILOT v2.5
+            </div>
+            <button class="term-min-btn" onclick="minimizeTerminal(event)" style="background:none; border:none; color:var(--neon-cyan); cursor:pointer; font-family:inherit; font-size:10px;">[MIN]</button>
+        </div>
+        <div class="term-body" id="chat-history">
+            <!-- Dynamically populated via initSecurityCheck -->
+        </div>
+        <div class="term-footer">
+            <input type="text" class="term-input" id="chat-input" placeholder="Type command or query..." onkeydown="handleChatKey(event)">
+            <button class="term-send" onclick="sendChatMessage(event)">SEND</button>
+        </div>
+    </div>
+
     <!-- Map Info Overlay -->
     <div id="info-panel">
         <h3 id="info-title">DATA NODE</h3>
@@ -470,6 +603,7 @@
     <div id="decrypt-zone">
         <button id="audio-toggle" class="audio-btn" onclick="toggleAudio(event)">AUDIO: OFF</button>
         <button id="dossier-toggle" class="audio-btn" onclick="toggleDossier(event)" style="border-color:var(--neon-cyan); color:var(--neon-cyan);">Operator Dossier</button>
+        <button id="copilot-toggle" class="audio-btn" onclick="toggleCopilot(event)" style="border-color:var(--neon-cyan); color:var(--neon-cyan);">AI Co-Pilot</button>
         <button id="decrypt-trigger" class="decrypt-btn" onclick="triggerHackingMinigame(event)">Neutralize Anomaly</button>
     </div>
 
@@ -685,8 +819,8 @@
 
             const loader = new THREE.TextureLoader();
             
-            // 1. IDENTITY HOLOGRAM
-            loader.load('hologram_new.png', function(tex) {
+            // 1. IDENTITY HOLOGRAM - Swapped with verified working filename from user's assets
+            loader.load('r6sb37yz31rg80cxzmyv2k3rm4_result_0.jpg', function(tex) {
                 const geo = new THREE.CircleGeometry(25, 64);
                 holoProfile = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide, transparent: true, opacity: 0.95 }));
                 holoProfile.position.set(0, 45, -70);
@@ -696,7 +830,6 @@
                 ring.position.set(0, 45, -70);
                 scene.add(ring);
                 
-                // Add operator dossier to proximity exhibits list!
                 displays.push({ mesh: holoProfile, title: "OPERATOR DOSSIER: NIKHIL KRISHNAN", desc: "Lead AI Specialist & Data Analyst. Certified in Vertex AI Prompt Design (Google Cloud) & DeepLearning.AI Prompt Engineering. Expert in LLM training and log auditing." });
             });
 
@@ -706,7 +839,6 @@
             mapTable.position.set(0, 2, -160);
             scene.add(mapTable);
             
-            // Register table as a radar display target
             displays.push({ mesh: mapTable, title: "SPOOFING RADAR SOURCE", desc: "Main physical terminal executing coordinate injection anomaly vectors." });
 
             laser = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 200, 8), new THREE.MeshBasicMaterial({ color: 0xff3333, transparent: true, opacity: 0.8 }));
@@ -721,14 +853,16 @@
             scene.add(vault);
             displays.push({ mesh: vault, title: "CASE: COURSERA DISCREPANCY", desc: "Investigation into Financial Aid Case #06244620. 75% coverage granted but modules locked. Status: Under Active Audit." });
 
-            // 4. EXHIBITS
+            // 4. EXHIBITS - Cleanly mapped screenshots
             createDisplay('Screenshot_20260407_150128_Maps.jpg', -100, -200, "SPOOFING ANOMALY", "Detected 250km jump from Abu Dhabi Residential Area to Ruwais Offshore Sector.");
             createDisplay('Screenshot_20260407_151951_GPS Test.jpg', 0, -240, "GNSS DIAGNOSTICS", "Satellite fix loss recorded during coordinates injection.");
-            createDisplay('geosense-dashboard.jpg', 100, -200, "GEOSENSE DASHBOARD", "Power BI analytics frame showing the GeoSense spoofing investigation dashboard.");
+            createDisplay('power_bi_real visual.jpg', 100, -200, "GEOSENSE DASHBOARD", "Power BI analytics frame showing the GeoSense spoofing investigation dashboard.");
 
             camera.position.set(0, 15, 110);
             
-            // Init log entries
+            // --- Secure Key Lock & Loading logic init ---
+            initSecurityCheck();
+
             addTerminalLog("Mainframe core initializing.", "sys");
             addTerminalLog("GeoSense cryptographic logs: ready.", "info");
         }
@@ -751,30 +885,25 @@
         function updateRadar() {
             const radarMap = document.getElementById('radar-map');
             if (!radarMap) return;
-            radarMap.innerHTML = ''; // Clear previous frame blips
+            radarMap.innerHTML = '';
             
-            const radius = 70; // Map container half-size
-            const scaleFactor = 0.28; // Scale factor for coordinates to pixels
+            const radius = 70;
+            const scaleFactor = 0.28;
             
-            // Extract camera yaw (rotation)
             const angle = yaw;
             const cosYaw = Math.cos(-angle);
             const sinYaw = Math.sin(-angle);
 
             displays.forEach((d, idx) => {
-                // Rel position of target node relative to player camera
                 const relX = d.mesh.position.x - camera.position.x;
                 const relZ = d.mesh.position.z - camera.position.z;
                 
-                // Rotate points based on camera facing direction
                 const rotX = relX * cosYaw - relZ * sinYaw;
                 const rotZ = relX * sinYaw + relZ * cosYaw;
                 
-                // Coordinates converted to radar pixels
                 const blipX = radius + rotX * scaleFactor;
                 const blipY = radius + rotZ * scaleFactor;
 
-                // Validate if blip fits inside radar circle boundaries
                 const deltaX = blipX - radius;
                 const deltaY = blipY - radius;
                 
@@ -782,7 +911,6 @@
                     const blip = document.createElement('div');
                     blip.className = 'radar-blip';
                     
-                    // Style differently for spoofing source
                     if (d.title.includes("SPOOFING") || d.title.includes("ANOMALY") || d.title.includes("SOURCE")) {
                         blip.style.color = isDecrypted ? 'var(--neon-green)' : 'var(--neon-red)';
                         blip.className += ' radar-ping';
@@ -796,7 +924,6 @@
                 }
             });
 
-            // Center: Draw Player position
             const playerBlip = document.createElement('div');
             playerBlip.className = 'radar-blip';
             playerBlip.style.color = 'var(--neon-green)';
@@ -821,7 +948,6 @@
                 const board = document.getElementById('hex-board');
                 board.innerHTML = '';
                 
-                // Generate secret code sequence
                 this.targetSequence = [];
                 for(let i=0; i<3; i++) {
                     const randVal = hexValues[Math.floor(Math.random() * hexValues.length)];
@@ -835,7 +961,6 @@
                 document.getElementById('hack-status-message').innerText = "SYSTEM AWAITING KEY SEQUENCE LOCK...";
                 document.getElementById('hack-status-message').style.color = 'var(--neon-green)';
                 
-                // Build interactive hex matrix nodes
                 for (let i = 0; i < 40; i++) {
                     const isKeyNode = i > 0 && i % 8 === 0;
                     const randomHex = hexValues[Math.floor(Math.random() * hexValues.length)];
@@ -855,7 +980,6 @@
                 
                 AudioSynth.playSweep(150, 400, 0.4, 'triangle');
                 
-                // Countdown loop
                 this.timerInterval = setInterval(() => {
                     this.timeRemaining -= 0.1;
                     if(this.timeRemaining <= 0) {
@@ -875,13 +999,10 @@
                 
                 this.playerSequence.push(value);
                 
-                // Check sequence validation
                 const step = this.playerSequence.length - 1;
                 if(this.playerSequence[step] !== this.targetSequence[step]) {
-                    // Incorrect sequence
                     this.fail();
                 } else if(this.playerSequence.length === this.targetSequence.length) {
-                    // Completed sequence successfully
                     this.success();
                 } else {
                     document.getElementById('hack-status-message').innerText = `LINK SECURED (${this.playerSequence.length}/3)...`;
@@ -965,22 +1086,18 @@
         let lastTime = Date.now();
 
         function updateHUDDiagnostics() {
-            // 1. Spatiotemporal translation formula (Simulates walking between AD residential & Ruwais)
             const baseLat = 24.453900;
             const baseLon = 54.377300;
             
-            // Map player camera positioning into GPS coordinates
             const currentLat = baseLat + (camera.position.z / 15000);
             const currentLon = baseLon + (camera.position.x / 15000);
             
             document.getElementById('telemetry-coords').innerText = `${currentLat.toFixed(6)}° N, ${currentLon.toFixed(6)}° E`;
             
-            // 2. Real-time dynamic velocity
             const now = Date.now();
-            const timeDiff = (now - lastTime) / 1000; // in seconds
+            const timeDiff = (now - lastTime) / 1000;
             const dist = camera.position.distanceTo(lastPosition);
             
-            // Calculate mock velocity in km/h
             const speed = timeDiff > 0 ? (dist / timeDiff) * 0.45 : 0;
             document.getElementById('telemetry-speed').innerText = `${speed.toFixed(1)} km/h`;
             
@@ -1044,9 +1161,11 @@
         }
 
         document.addEventListener('keydown', (e) => {
+            if (document.activeElement === document.getElementById('chat-input')) {
+                return; 
+            }
             keys[e.code] = true;
             if (e.code === 'KeyW' || e.code === 'KeyA' || e.code === 'KeyS' || e.code === 'KeyD') {
-                // Play subtle tactical footstep clicking synthesis
                 if (Math.random() < 0.25 && isAudioPlaying) {
                     AudioSynth.playBeep(120, 0.04, 'triangle');
                 }
@@ -1054,8 +1173,12 @@
         });
         document.addEventListener('keyup', (e) => keys[e.code] = false);
 
-        document.addEventListener('mousedown', () => {
+        document.addEventListener('mousedown', (e) => {
             if (document.getElementById('loading-screen').style.display === 'none' && !HackGame.active && !isDossierOpen) {
+                const term = document.getElementById('ai-terminal');
+                if (term && term.contains(e.target)) {
+                    return; 
+                }
                 requestLock();
             }
         });
@@ -1066,7 +1189,7 @@
                 hint.style.display = 'none';
                 addTerminalLog("Pointer terminal connected.", "info");
             } else {
-                if(!HackGame.active && !isDossierOpen) {
+                if(!HackGame.active && !isDossierOpen && !isTerminalMinimized) {
                     hint.style.display = 'block';
                     addTerminalLog("Pointer terminal disengaged.", "warn");
                 }
@@ -1090,25 +1213,24 @@
             requestAnimationFrame(animate);
             
             const speed = 1.35;
-            if(keys['KeyW']) camera.translateZ(-speed);
-            if(keys['KeyS']) camera.translateZ(speed);
-            if(keys['KeyA']) camera.translateX(-speed);
-            if(keys['KeyD']) camera.translateX(speed);
+            if (document.pointerLockElement === document.body) {
+                if(keys['KeyW']) camera.translateZ(-speed);
+                if(keys['KeyS']) camera.translateZ(speed);
+                if(keys['KeyA']) camera.translateX(-speed);
+                if(keys['KeyD']) camera.translateX(speed);
+            }
             
-            // Room bounds collision check (Invisible walls to keep in lab)
             const mapLimitX = 240;
             const mapLimitZMin = -320;
             const mapLimitZMax = 110;
             camera.position.x = Math.max(-mapLimitX, Math.min(mapLimitX, camera.position.x));
             camera.position.z = Math.max(mapLimitZMin, Math.min(mapLimitZMax, camera.position.z));
-            camera.position.y = 15; // Maintain standing height
+            camera.position.y = 15;
 
-            // Float particles
             particles.rotation.y += 0.0006;
             if(vault) vault.rotation.y += 0.004;
             if(holoProfile) holoProfile.rotation.y += 0.008;
 
-            // Proximity HUD checking and logger feeds
             let found = false;
             const now = Date.now();
             
@@ -1120,7 +1242,6 @@
                     document.getElementById('info-desc').innerText = d.desc;
                     found = true;
                     
-                    // Log proximity alerts dynamically
                     if (now - lastDistanceCheck > 6000) {
                         addTerminalLog(`Proximity scan: locked onto node '${d.title}'.`, "info");
                         lastDistanceCheck = now;
@@ -1132,10 +1253,8 @@
             });
             if (!found) document.getElementById('info-panel').style.display = 'none';
 
-            // Pulsating laser aesthetics
             laser.material.opacity = isDecrypted ? 0.7 : (0.35 + Math.sin(Date.now() * 0.012) * 0.45);
             
-            // Dynamic UI updates
             updateHUDDiagnostics();
             updateRadar();
             
@@ -1147,6 +1266,166 @@
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
+
+        // ==================== 🧠 INTEGRATING GEMINI CONNECTIVITY ====================
+        let userGeminiApiKey = "";
+
+        function initSecurityCheck() {
+            const chatHistory = document.getElementById('chat-history');
+            const savedKey = localStorage.getItem('geosense_gemini_key');
+
+            if (savedKey) {
+                userGeminiApiKey = savedKey;
+                chatHistory.innerHTML = `
+                    <div class="chat-msg system">
+                        > Secure payload link established with Gemini-2.5.<br>
+                        > Welcome back, <strong>Lead Expert NK</strong>. <br>
+                        > Co-Pilot fully operational. Type below to query spatiotemporal logic streams.<br>
+                        > <i>Note: Type "/reset" to clear the secure key.</i>
+                    </div>
+                `;
+            } else {
+                chatHistory.innerHTML = `
+                    <div class="chat-msg system" style="border-left-color: var(--neon-red);">
+                        > <span style="color: var(--neon-red); font-weight: bold;">[SECURE LINK ERROR]: No API key detected.</span><br>
+                        > To activate the AI Co-Pilot on nikhilkrishnan.dev, please paste your Gemini API Key in the chat bar below and press SEND.<br>
+                        > <i>(Your key is saved locally in your own browser's storage and never leaked to GitHub or external systems).</i>
+                    </div>
+                `;
+            }
+        }
+
+        function unlockPointerForChat(e) {
+            if(e) e.stopPropagation();
+            if (document.pointerLockElement === document.body) {
+                document.exitPointerLock();
+            }
+            document.getElementById('chat-input').focus();
+        }
+
+        function handleChatKey(event) {
+            event.stopPropagation(); 
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        let isTerminalMinimized = false;
+        function minimizeTerminal(e) {
+            if(e) e.stopPropagation();
+            const term = document.getElementById('ai-terminal');
+            const btn = e.target;
+            if(isTerminalMinimized) {
+                term.classList.remove('minimized');
+                btn.innerText = "[MIN]";
+                addTerminalLog("AI Terminal restored.", "info");
+            } else {
+                term.classList.add('minimized');
+                btn.innerText = "[MAX]";
+                addTerminalLog("AI Terminal minimized.", "info");
+            }
+            isTerminalMinimized = !isTerminalMinimized;
+        }
+
+        function toggleCopilot(e) {
+            if(e) e.stopPropagation();
+            const term = document.getElementById('ai-terminal');
+            if (term.style.display === 'none') {
+                term.style.display = 'flex';
+                AudioSynth.playBeep(700, 0.08, 'sine');
+                addTerminalLog("AI Terminal interface active.", "sys");
+            } else {
+                term.style.display = 'none';
+                addTerminalLog("AI Terminal interface disabled.", "warn");
+            }
+        }
+
+        async function sendChatMessage(e) {
+            if(e) e.stopPropagation();
+            const inputField = document.getElementById('chat-input');
+            const messageText = inputField.value.trim();
+            if (!messageText) return;
+
+            // Clear security key logic
+            if (messageText.toLowerCase() === '/reset') {
+                localStorage.removeItem('geosense_gemini_key');
+                userGeminiApiKey = "";
+                inputField.value = "";
+                initSecurityCheck();
+                return;
+            }
+
+            // Set Security key logic
+            if (!userGeminiApiKey) {
+                localStorage.setItem('geosense_gemini_key', messageText);
+                userGeminiApiKey = messageText;
+                inputField.value = "";
+                const chatHistory = document.getElementById('chat-history');
+                chatHistory.innerHTML += `
+                    <div class="chat-msg system">
+                        > [ACCESS GRANTED]: Secure key initialized successfully.<br>
+                        > Connection established with generative framework.<br>
+                        > Welcome, <strong>NK</strong>! What analysis shall we run?
+                    </div>
+                `;
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+                return;
+            }
+
+            addMessageToTerminal(messageText, 'user');
+            inputField.value = "";
+
+            const loaderId = "loader-" + Date.now();
+            addMessageToTerminal("Analyzing telemetry stream... 📡", 'system', loaderId);
+
+            try {
+                const response = await callGeminiAPI(messageText);
+                document.getElementById(loaderId).innerHTML = "> " + response.replace(/\n/g, "<br>");
+                AudioSynth.playBeep(1100, 0.1, 'sine');
+            } catch (error) {
+                document.getElementById(loaderId).innerHTML = `<span style="color: var(--neon-red)">> Connection failed: ${error.message}</span>`;
+                AudioSynth.playSweep(300, 100, 0.3, 'sawtooth');
+            }
+        }
+
+        function addMessageToTerminal(text, sender, elementId = null) {
+            const chatHistory = document.getElementById('chat-history');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `chat-msg ${sender}`;
+            if (elementId) msgDiv.id = elementId;
+            msgDiv.innerHTML = sender === 'user' ? text : `> ${text}`;
+            chatHistory.appendChild(msgDiv);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        async function callGeminiAPI(userQuery) {
+            const systemPrompt = "You are the GeoSense AI Assistant, built directly into the 3D Forensic Lab dashboard of Lead Geospatial Forensic Expert Nikhil Krishnan (NK). Talk like a brilliant, supportive high-tech co-pilot who has NK's back. Keep responses crisp, precise, and forensic-themed. Use forensic slang where appropriate (e.g. 'Euclidean verification completed', 'coordinate anomaly detected', 'signal injection route traced'). Since you are NK's personal system, blend friendly, supportive Malayalam slang in a highly professional and extremely cool hacker way.";
+            
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] }
+            };
+
+            let delay = 1000;
+            for (let i = 0; i < 5; i++) {
+                try {
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${userGeminiApiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (response.ok) {
+                        const result = await response.json();
+                        return result.candidates?.[0]?.content?.parts?.[0]?.text || "No connection payload recovered.";
+                    }
+                } catch (err) {
+                    // Fail silently
+                }
+                await new Promise(res => setTimeout(res, delay));
+                delay *= 2;
+            }
+            throw new Error("Terminal connection timed out. Exponential backoff exhausted.");
+        }
 
         init();
     </script>
