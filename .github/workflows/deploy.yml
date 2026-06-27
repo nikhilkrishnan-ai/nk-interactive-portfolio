@@ -40,7 +40,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           # Upload entire repository (change to "." if your index.html is in the root directory)
-          path: "."
+          path: "www"
 
       - name: Deploy to GitHub Pages
         id: deployment

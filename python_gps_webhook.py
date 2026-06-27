@@ -1,67 +1,161 @@
 import os
 import sys
 import json
+from datetime import datetime, timezone
+
 import functions_framework
 from azure.eventhub import EventHubProducerClient, EventData
 
+from geosense_engine_core import GeoSenseEngine
+
 # 🚨 SECURITY FIX: Load sensitive credentials from environment variables to prevent GitHub Secret Scanning blocks.
-# We fetch this dynamically from GCloud Run's RAM environment variables instead of hardcoding.
 EVENT_HUB_CONNECTION_STR = os.environ.get("EVENT_HUB_CONNECTION_STR")
 EVENT_HUB_NAME = os.environ.get("EVENT_HUB_NAME", "esehpn8bkui7d5e033f3x1_eh")
+GEOSENSE_SPEED_THRESHOLD_KMH = int(os.environ.get("GEOSENSE_SPEED_THRESHOLD_KMH", "1000"))
 
-@functions_framework.http
-def hello_http(request):
-    # 1. Favicon റിക്വസ്റ്റുകൾ അവഗണിക്കുന്നു
-    if request.path == '/favicon.ico':
-        return '', 204
-        
-    # 2. Check if configuration is missing from the environment
-    if not EVENT_HUB_CONNECTION_STR:
-        print("FATAL ERROR: EVENT_HUB_CONNECTION_STR environment variable is not configured!", file=sys.stderr)
-        return jsonify_response({
-            "status": "error", 
-            "message": "Backend Configuration Error: Missing connection parameters on Google Cloud."
-        }, 500)
-        
-    # 3. പോസ്റ്റ് വഴി വരുന്ന ബോഡി ഡാറ്റ റീഡ് ചെയ്യുന്നു
-    request_json = request.get_json(silent=True)
-    
-    if request_json:
-        # ടെർമക്സിൽ നിന്നുള്ള അസംസ്കൃത ഡാറ്റ ക്ലൗഡ് കൺസോളിൽ പ്രിന്റ് ചെയ്യുന്നു
-        print(f"Data received from Termux: {request_json}")
-        
-        # പേലോഡ് പാക്കറ്റ് ക്രിയേറ്റ് ചെയ്യുന്നു
-        payload = {
-            "latitude": request_json.get('latitude'),
-            "longitude": request_json.get('longitude'),
-            "speed": request_json.get('speed', 0.0),
-            "device_id": request_json.get('device_id', 'Termux_Node_Alpha'),
-            "message": str(request_json.get('message', 'Telemetry Stream Active'))
-        }
-        
-        try:
-            # 4. Azure Event Hub വഴിയുള്ള എന്റർപ്രൈസ് കണക്ഷൻ
-            producer = EventHubProducerClient.from_connection_string(
-                conn_str=EVENT_HUB_CONNECTION_STR, 
-                eventhub_name=EVENT_HUB_NAME
-            )
-            with producer:
-                # ഡാറ്റ എക്സ്പ്രസ്സ് ബാച്ച് ആയി പാക്ക് ചെയ്യുന്നു
-                event_data_batch = producer.create_batch()
-                event_data_batch.add(EventData(json.dumps(payload)))
-                
-                # മൈക്രോസോഫ്റ്റ് ഫാബ്രിക്കിലേക്ക് ഡാറ്റ പായിക്കുന്നു!
-                producer.send_batch(event_data_batch)
-                
-            print("Successfully sent to Microsoft Fabric Eventstream! 🔥")
-            return jsonify_response({"status": "success", "message": "Telemetry forwarded to Microsoft Fabric! 🚀"}, 200)
-            
-        except Exception as e:
-            print(f"Error sending to Fabric: {e}", file=sys.stderr)
-            return jsonify_response({"status": "error", "message": f"Fabric Connection Fault: {str(e)}"}, 500)
-            
-    return jsonify_response({"status": "error", "message": "Empty or Invalid JSON payload received"}, 400)
+forensic_engine = GeoSenseEngine(speed_threshold=GEOSENSE_SPEED_THRESHOLD_KMH)
+_device_last_point = {}
+TIMESTAMP_FMT = "%Y-%m-%d %H:%M:%S"
+
 
 def jsonify_response(data, status_code):
     """സെർവറിൽ നിന്ന് ജെസൺ റെസ്പോൺസ് റിട്ടേൺ ചെയ്യാനുള്ള ഹെൽപ്പർ"""
-    return json.dumps(data), status_code, {'Content-Type': 'application/json'}
+    return json.dumps(data), status_code, {"Content-Type": "application/json"}
+
+
+def normalize_timestamp(raw_timestamp):
+    """Accept client timestamps or fall back to UTC server time."""
+    if not raw_timestamp:
+        return datetime.now(timezone.utc).strftime(TIMESTAMP_FMT)
+
+    if isinstance(raw_timestamp, (int, float)):
+        return datetime.fromtimestamp(raw_timestamp, tz=timezone.utc).strftime(TIMESTAMP_FMT)
+
+    value = str(raw_timestamp).strip()
+    for fmt in (TIMESTAMP_FMT, "%Y-%m-%dT%H:%M:%S", "%Y-%m-%dT%H:%M:%SZ"):
+        try:
+            return datetime.strptime(value.replace("Z", ""), fmt.replace("Z", "")).strftime(TIMESTAMP_FMT)
+        except ValueError:
+            continue
+
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00")).strftime(TIMESTAMP_FMT)
+    except ValueError:
+        return datetime.now(timezone.utc).strftime(TIMESTAMP_FMT)
+
+
+def build_telemetry_point(latitude, longitude, timestamp=None):
+    return {
+        "lat": float(latitude),
+        "lon": float(longitude),
+        "timestamp": normalize_timestamp(timestamp),
+    }
+
+
+def run_forensic_analysis(device_id, latitude, longitude, timestamp=None):
+    """Compare the incoming ping with the last stored ping for this device."""
+    if latitude is None or longitude is None:
+        return {"status": "SKIPPED", "reason": "Missing latitude or longitude"}
+
+    try:
+        current_point = build_telemetry_point(latitude, longitude, timestamp)
+    except (TypeError, ValueError):
+        return {"status": "ERROR", "reason": "Invalid coordinate payload"}
+
+    previous_point = _device_last_point.get(device_id)
+    _device_last_point[device_id] = current_point
+
+    if not previous_point:
+        return {
+            "status": "BASELINE",
+            "reason": "First telemetry point stored for device",
+            "timestamp": current_point["timestamp"],
+        }
+
+    analysis = forensic_engine.analyze_trajectory(previous_point, current_point)
+    analysis["previous_timestamp"] = previous_point["timestamp"]
+    analysis["current_timestamp"] = current_point["timestamp"]
+    return analysis
+
+
+@functions_framework.http
+def hello_http(request):
+    if request.path == "/favicon.ico":
+        return "", 204
+
+    if not EVENT_HUB_CONNECTION_STR:
+        print(
+            "FATAL ERROR: EVENT_HUB_CONNECTION_STR environment variable is not configured!",
+            file=sys.stderr,
+        )
+        return jsonify_response(
+            {
+                "status": "error",
+                "message": "Backend Configuration Error: Missing connection parameters on Google Cloud.",
+            },
+            500,
+        )
+
+    request_json = request.get_json(silent=True)
+    if not request_json:
+        return jsonify_response(
+            {"status": "error", "message": "Empty or Invalid JSON payload received"},
+            400,
+        )
+
+    print(f"Data received from Termux: {request_json}")
+
+    device_id = request_json.get("device_id", "Termux_Node_Alpha")
+    latitude = request_json.get("latitude")
+    longitude = request_json.get("longitude")
+    forensic_report = run_forensic_analysis(
+        device_id,
+        latitude,
+        longitude,
+        request_json.get("timestamp"),
+    )
+
+    payload = {
+        "latitude": latitude,
+        "longitude": longitude,
+        "speed": request_json.get("speed", 0.0),
+        "device_id": device_id,
+        "message": str(request_json.get("message", "Telemetry Stream Active")),
+        "timestamp": normalize_timestamp(request_json.get("timestamp")),
+        "forensic_analysis": forensic_report,
+    }
+
+    if forensic_report.get("status") in {"SPOOFED", "ANOMALY"}:
+        print(
+            f"GEOSENSE ALERT [{device_id}]: {forensic_report['status']} "
+            f"- velocity={forensic_report.get('calculated_velocity_kmh', 'N/A')} km/h "
+            f"- threat={forensic_report.get('threat_level', 'UNKNOWN')}",
+            file=sys.stderr,
+        )
+
+    try:
+        producer = EventHubProducerClient.from_connection_string(
+            conn_str=EVENT_HUB_CONNECTION_STR,
+            eventhub_name=EVENT_HUB_NAME,
+        )
+        with producer:
+            event_data_batch = producer.create_batch()
+            event_data_batch.add(EventData(json.dumps(payload)))
+            producer.send_batch(event_data_batch)
+
+        print("Successfully sent to Microsoft Fabric Eventstream!")
+        response_body = {
+            "status": "success",
+            "message": "Telemetry analyzed and forwarded to Microsoft Fabric!",
+            "forensic_analysis": forensic_report,
+        }
+        if forensic_report.get("status") in {"SPOOFED", "ANOMALY"}:
+            response_body["alert"] = "GPS spoofing anomaly detected"
+        return jsonify_response(response_body, 200)
+
+    except Exception as e:
+        print(f"Error sending to Fabric: {e}", file=sys.stderr)
+        return jsonify_response(
+            {"status": "error", "message": f"Fabric Connection Fault: {str(e)}"},
+            500,
+        )

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoSense Case Study | Geonode Labs</title>
+    <meta name="robots" content="noindex, nofollow">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --accent: #38bdf8;
+            --accent-hover: #0ea5e9;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --alert-red: #ef4444;
+            --success-green: #10b981;
+        }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 2rem 1rem;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        /* GLOBAL NAVIGATION BAR */
+        .global-nav {
+            background: #0b0f19;
+            border-bottom: 1px solid #334155;
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            margin: -2rem -1rem 0 -1rem;
+        }
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-brand {
+            color: #38bdf8;
+            font-weight: bold;
+            text-decoration: none;
+            letter-spacing: 0.05em;
+            font-size: 1.1rem;
+        }
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        .nav-links a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
+        }
+        .nav-links a:hover {
+            color: #f8fafc;
+        }
+        .nav-links a.nav-cta {
+            background: rgba(56, 189, 248, 0.1);
+            color: #38bdf8;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            font-weight: 500;
+        }
+        .nav-links a.nav-cta:hover {
+            background: #38bdf8;
+            color: #0f172a;
+        }
+        @media (max-width: 600px) {
+            .nav-container { flex-direction: column; gap: 1rem; text-align: center; }
+            .global-nav { margin: -2rem -1rem 1rem -1rem; }
+        }
+
+        /* Navigation Breadcrumb */
+        .breadcrumb {
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+        .breadcrumb a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
+        h1 { font-size: 2.5rem; margin: 0 0 0.5rem 0; color: #fff; }
+        .subtitle { color: var(--text-muted); font-size: 1.2rem; margin-bottom: 2rem; }
+        
+        /* Quick Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .metric-card {
+            background: var(--surface);
+            padding: 1.25rem;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            text-align: center;
+        }
+        .metric-val { font-size: 1.8rem; font-weight: bold; color: var(--accent); display: block; }
+        .metric-label { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+        h2 { color: var(--accent); font-size: 1.6rem; margin-top: 3rem; border-left: 4px solid var(--accent); padding-left: 0.75rem; }
+        p { color: #cbd5e1; }
+        ul { padding-left: 1.25rem; color: #cbd5e1; }
+        li { margin-bottom: 0.5rem; }
+
+        /* CSS Architecture Flow Diagram */
+        .arch-flow {
+            background: #111827;
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            margin: 2rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        .arch-step {
+            background: var(--surface);
+            border: 1px solid var(--accent);
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+        }
+        .arch-step::after {
+            content: "↓";
+            position: absolute;
+            bottom: -1.75rem;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        .arch-step:last-child::after { content: ""; }
+        .arch-step strong { display: block; color: #fff; font-size: 1rem; }
+        .arch-step span { font-size: 0.85rem; color: var(--text-muted); }
+
+        /* Terminal Display Box mimicking your deployment output */
+        .terminal-box {
+            background: #050b14;
+            border-radius: 8px;
+            border: 1px solid #1e293b;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .term-header {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 0.5rem;
+        }
+        .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+        .dot.r { background: #ef4444; }
+        .dot.y { background: #f59e0b; }
+        .dot.g { background: #10b981; }
+        .term-body { font-size: 0.9rem; color: #38bdf8; line-height: 1.4; }
+        .t-white { color: #fff; }
+        .t-green { color: var(--success-green); }
+        .t-red { color: var(--alert-red); font-weight: bold; }
+        .t-muted { color: #64748b; }
+
+        /* Call To Action Box */
+        .cta-box {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 2px solid var(--accent);
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 4rem;
+        }
+        .btn-cta {
+            background: var(--accent);
+            color: #0f172a;
+            padding: 0.75rem 2rem;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 6px;
+            display: inline-block;
+            margin-top: 1rem;
+            transition: background 0.2s ease;
+        }
+        .btn-cta:hover { background: var(--accent-hover); }
+    </style>
+</head>
+<body>
+
+<!-- GLOBAL NAVIGATION BAR -->
+<nav class="global-nav">
+    <div class="nav-container">
+        <a href="../index.html" class="nav-brand">GEONODE LABS</a>
+        <div class="nav-links">
+            <a href="../services/index.html">Services</a>
+            <a href="geosense.html">Case Study</a>
+            <a href="../pricing-models.html">Pricing</a>
+            <a href="../scoping.html" class="nav-cta">Scoping Portal</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    
+    <!-- BREADCRUMB -->
+    <div class="breadcrumb">
+        <a href="../services/index.html">← Back to Services</a> / Case Studies
+    </div>
+
+    <!-- HEADER SECTION -->
+    <h1>GeoSense Alert Engine</h1>
+    <div class="subtitle">Decoupled, event-driven telemetry monitoring deployed on enterprise infrastructure.</div>
+
+    <!-- KEY PERFORMANCE METRICS -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <span class="metric-val">&lt; 30ms</span>
+            <span class="metric-label">Execution Latency</span>
+        </div>
+        <div class="metric-card">
+            <span class="metric-val">100% Cloud</span>
+            <span class="metric-label">GCP Cloud Run Built</span>
+        </div>
+        <div class="metric-card">
+            <span class="metric-val">Asynchronous</span>
+            <span class="metric-label">Multi-Thread Workers</span>
+        </div>
+    </div>
+
+    <!-- THE PROBLEM -->
+    <h2>The Threat Vector & Operational Challenge</h2>
+    <p>
+        Modern global logistics layouts are heavily vulnerable to GPS spoofing, coordinate hopping, and environmental signal occlusion. Standard polling architectures suffer from significant network latency and computational overhead, making real-time anomaly detection nearly impossible for mission-critical supply chain operations.
+    </p>
+
+    <!-- THE ARCHITECTURE -->
+    <h2>The Cloud Compute Architecture</h2>
+    <p>
+        To bypass local execution bottlenecks, the system architecture was refactored from a local endpoint loop into a high-availability, permanent serverless slot on Google Cloud Run:
+    </p>
+
+    <div class="arch-flow">
+        <div class="arch-step">
+            <strong>1. Ingestion Gate</strong>
+            <span>Google Cloud Pub/Sub handles sub-millisecond telemetry event streams.</span>
+        </div>
+        <div class="arch-step">
+            <strong>2. Serverless Computation</strong>
+            <span>GCP Cloud Run executes decoupled async Python framework routines.</span>
+        </div>
+        <div class="arch-step">
+            <strong>3. Semantic Engine Layer</strong>
+            <span>IBM Watson Natural Language Understanding extracts entity data payloads.</span>
+        </div>
+        <div class="arch-step">
+            <strong>4. Cellular Edge Dispatch</strong>
+            <span>Bypasses standard alert delay pipelines to trigger standalone smartwatch eSIMs.</span>
+        </div>
+    </div>
+
+    <!-- LIVE LOG REPLICA -->
+    <h2>Live Event Execution Logs</h2>
+    <p>Below is a production-level replica of an active asynchronous worker capturing and isolating a telemetry fault matrix flag:</p>
+
+    <div class="terminal-box">
+        <div class="term-header">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <span class="t-muted" style="font-size:0.8rem; margin-left: 0.5rem;">geosense-worker-004a // cloud-run-instance</span>
+        </div>
+        <div class="term-body">
+            ⚡ Async Worker Active: Processing History ID 46820098...<br>
+            <span class="t-white">📄 Raw Content Extracted:</span> <span class="t-red">"The primary gateway server down alert was verified by the system..."</span><br>
+            <span class="t-white">🔍 Keywords Isolated:</span> <span class="t-muted">['primary gateway server', 'critical tracking anomaly', 'vehicle cluster matrix pipeline', 'telemetry', 'alert']</span><br>
+            🚨 🚨 🚨 <span class="t-red">[GEOSENSE ALERT TRIGGERED]</span> 🚨 🚨 🚨<br>
+            ⚠️ Critical status signature identified in History ID: 46820098<br>
+            ✅ Matched Context Sequence Verified.<br><br>
+            📡 Broadcasting alert matrix directly to watch eSIM...<br>
+            ⌚ <span class="t-green">eSIM direct packet delivery successful! Wrist node buzzed.</span>
+        </div>
+    </div>
+
+    <!-- TECH STACK BARS -->
+    <h2>Engine Integration Parameters</h2>
+    <ul>
+        <li><strong>Infrastructure Core:</strong> Google Cloud Platform (Pub/Sub, Container Registry, Cloud Run Instances).</li>
+        <li><strong>Processing Languages:</strong> Highly optimized, asynchronous, multi-threaded Python loops.</li>
+        <li><strong>Semantic Processing:</strong> IBM Watson NLU for real-time natural language pattern and string evaluations.</li>
+        <li><strong>Downstream Targets:</strong> Secure independent payload routing utilizing standalone cellular device integrations.</li>
+    </ul>
+
+    <!-- B2B CALL TO ACTION -->
+    <div class="cta-box">
+        <h3>Need High-Impact Telemetry Infrastructure?</h3>
+        <p>We build resilient, serverless, automated systems designed to process complex data layers under extreme speed requirements.</p>
+        <a href="../scoping.html" class="btn-cta">→ Initialize Scoping Protocol</a>
+    </div>
+</div>
+
+</body>
+</html>
