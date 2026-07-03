@@ -83,19 +83,6 @@ def hello_http(request):
     if request.path == "/favicon.ico":
         return "", 204
 
-    if not EVENT_HUB_CONNECTION_STR:
-        print(
-            "FATAL ERROR: EVENT_HUB_CONNECTION_STR environment variable is not configured!",
-            file=sys.stderr,
-        )
-        return jsonify_response(
-            {
-                "status": "error",
-                "message": "Backend Configuration Error: Missing connection parameters on Google Cloud.",
-            },
-            500,
-        )
-
     request_json = request.get_json(silent=True)
     if not request_json:
         return jsonify_response(
@@ -103,9 +90,9 @@ def hello_http(request):
             400,
         )
 
-    print(f"Data received from Termux: {request_json}")
+    print(f"Telemetry received from edge node: {request_json}")
 
-    device_id = request_json.get("device_id", "Termux_Node_Alpha")
+    device_id = request_json.get("device_id", "Ubuntu_Edge_Node")
     latitude = request_json.get("latitude")
     longitude = request_json.get("longitude")
     forensic_report = run_forensic_analysis(
@@ -133,6 +120,22 @@ def hello_http(request):
             file=sys.stderr,
         )
 
+    response_body = {
+        "status": "success",
+        "forensic_analysis": forensic_report,
+        "phase": "local" if not EVENT_HUB_CONNECTION_STR else "fabric",
+    }
+    if forensic_report.get("status") in {"SPOOFED", "ANOMALY"}:
+        response_body["alert"] = "GPS spoofing anomaly detected"
+
+    if not EVENT_HUB_CONNECTION_STR:
+        print("Phase 1 local mode: forensic analysis complete (Event Hub not configured).")
+        response_body["message"] = (
+            "Telemetry analyzed on Ubuntu edge node. "
+            "Set EVENT_HUB_CONNECTION_STR in server/.env to enable Phase 2 Fabric stream."
+        )
+        return jsonify_response(response_body, 200)
+
     try:
         producer = EventHubProducerClient.from_connection_string(
             conn_str=EVENT_HUB_CONNECTION_STR,
@@ -143,14 +146,8 @@ def hello_http(request):
             event_data_batch.add(EventData(json.dumps(payload)))
             producer.send_batch(event_data_batch)
 
-        print("Successfully sent to Microsoft Fabric Eventstream!")
-        response_body = {
-            "status": "success",
-            "message": "Telemetry analyzed and forwarded to Microsoft Fabric!",
-            "forensic_analysis": forensic_report,
-        }
-        if forensic_report.get("status") in {"SPOOFED", "ANOMALY"}:
-            response_body["alert"] = "GPS spoofing anomaly detected"
+        print("Phase 2: successfully sent to Microsoft Fabric Eventstream!")
+        response_body["message"] = "Telemetry analyzed and forwarded to Microsoft Fabric!"
         return jsonify_response(response_body, 200)
 
     except Exception as e:
