@@ -1,0 +1,14 @@
+services:
+  geosense-webhook:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: geosense-webhook
+    ports:
+      - "${PORT:-8080}:8080"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      GEOSENSE_SPEED_THRESHOLD_KMH: "${GEOSENSE_SPEED_THRESHOLD_KMH:-1000}"
+    restart: unless-stopped
